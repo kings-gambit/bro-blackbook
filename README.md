@@ -17,8 +17,8 @@ Then add the following line to your `local.bro` file:
 
 	@load blackbook
 
-<TODO>
+__TODO__
 
 ### Extending the script
 
-<TODO>
+__TODO__
