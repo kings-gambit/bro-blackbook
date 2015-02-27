@@ -52,7 +52,7 @@ function stream_blacklist()
 
 	# add_table call to repopulate the table
 	Input::add_table([
-		$source="/Users/nsiow/Dropbox/code/bro/blackbooks/ip_blacklist/ip_blacklist.brodata",
+		$source="/Users/nsiow/Dropbox/code/bro/blackbook/blacklists/ip_blacklist.brodata",
 		$name="ipblacklist",
 		$idx=Idx,
 		$val=Val,
