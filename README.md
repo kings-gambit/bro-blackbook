@@ -19,6 +19,6 @@ Then add the following line to your `local.bro` file:
 
 __TODO__
 
-### Extending the script
+### Extending the scripts
 
 __TODO__

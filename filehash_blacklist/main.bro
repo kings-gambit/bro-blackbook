@@ -3,13 +3,14 @@
 #		Nicholas Siow | compilewithstyle@gmail.com
 #	
 #	Description:
-#		Reads from a list of blacklisted IPs and raises a NOTICE
-#		if these connections are seen anywhere
+#		Looks for MD5 / SHA1 / SHA256 hashes in the flow of files
+#		across the network
 #--------------------------------------------------------------------------------
 
-@load base/protocols/conn
+@load base/files/hash
+@load base/frameworks/files
 
-module Blackbook_IP;
+module Blackbook_FILEHASHES;
 
 #--------------------------------------------------------------------------------
 #	Set up variables and types to be used in this script
@@ -17,7 +18,7 @@ module Blackbook_IP;
 
 type Idx: record
 {
-	ip: addr;
+	filehash: string;
 };
 
 type Val: record
@@ -26,11 +27,11 @@ type Val: record
 };
 
 # global blacklist variable that will be synchronized across nodes
-global IP_BLACKLIST: table[addr] of Val &synchronized;
+global FILEHASH_BLACKLIST: table[string] of Val &synchronized;
 
 # create a new notice type
 redef enum Notice::Type += {
-	Conn_to_Blacklisted_IP
+	Blacklisted_File_Downloaded
 };
 
 #--------------------------------------------------------------------------------
@@ -40,15 +41,15 @@ redef enum Notice::Type += {
 function stream_blacklist()
 {
 	# reset the existing table
-	IP_BLACKLIST = table();
+	FILEHASH_BLACKLIST = table();
 
 	# add_table call to repopulate the table
 	Input::add_table([
-		$source="/Users/nsiow/Dropbox/code/bro/blackbook/blacklists/ip_blacklist.brodata",
-		$name="ipblacklist",
+		$source="/Users/nsiow/Dropbox/code/bro/blackbook/blacklists/filehash_blacklist.brodata",
+		$name="filehashblacklist",
 		$idx=Idx,
 		$val=Val,
-		$destination=IP_BLACKLIST,
+		$destination=FILEHASH_BLACKLIST,
 		$mode=Input::REREAD
 		]);
 }
@@ -60,13 +61,13 @@ function stream_blacklist()
 
 event Input::end_of_data( name:string, source:string )
 {
-	if( name != "ipblacklist" )
-		return;
+		if( name != "filehashblacklist" )
+			return;
 
-	print "IP_BLACKLIST.BRO -----------------------------------------------";
-	print "Succesfully imported IP_BLACKLIST:";
-	print IP_BLACKLIST;
-	print "IP_BLACKLIST.BRO -----------------------------------------------";
+		print "FILEHASH_BLACKLIST.BRO -----------------------------------------------";
+		print "Succesfully imported FILEHASH_BLACKLIST:";
+		print FILEHASH_BLACKLIST;
+		print "FILEHASH_BLACKLIST.BRO -----------------------------------------------";
 }
 
 #--------------------------------------------------------------------------------
@@ -79,33 +80,58 @@ event bro_init()
 }
 
 #--------------------------------------------------------------------------------
-#	Hook into the CONNECTION_STATE_REMOVE event and raise a notice
-#	if any of the IPs are seen
+#	Hook into the LOG_FILES event and raise a notice
+# if any of the specified filehashes are seen
 #--------------------------------------------------------------------------------
 
-event Conn::log_conn( c:Conn::Info )
+event Files::log_files( r:Files::Info )
 {
-	local orig: addr = c$id$orig_h;
-	local resp: addr = c$id$resp_h;
+	local hash: string;
 
-	if( orig in IP_BLACKLIST )
+	if( r?$md5 )
 	{
-		NOTICE([
-			$note=Conn_to_Blacklisted_IP,
-			$msg=fmt("Connection to blacklisted IP: <%s>", orig),
-			$blackbook_source = IP_BLACKLIST[orig]$source,
-			$blackbook_record = fmt("%s", c)
-			]);
-		return;
+		hash = r$md5;
+		if( hash in FILEHASH_BLACKLIST )
+		{
+			NOTICE([
+				$note=Blacklisted_File_Downloaded,
+				$msg=fmt("Download of malicious file: <%s>", hash),
+				$blackbook_source = FILEHASH_BLACKLIST[hash]$source,
+				$blackbook_record = fmt("%s", r)
+				]);
+			return;
+		}
 	}
-	else if( resp in IP_BLACKLIST )
+
+	if( r?$sha1 )
 	{
-		NOTICE([
-			$note=Conn_to_Blacklisted_IP,
-			$msg=fmt("Connection to blacklisted IP: <%s>", resp),
-			$blackbook_source = IP_BLACKLIST[resp]$source,
-			$blackbook_record = fmt("%s", c)
-			]);
-		return;
+		hash = r$sha1;
+		if( hash in FILEHASH_BLACKLIST )
+		{
+			NOTICE([
+				$note=Blacklisted_File_Downloaded,
+				$msg=fmt("Download of malicious file: <%s>", hash),
+				$blackbook_source = FILEHASH_BLACKLIST[hash]$source,
+				$blackbook_record = fmt("%s", r)
+				]);
+			return;
+		}
+	}
+
+	if( r?$sha256 )
+	{
+		hash = r$sha256;
+		if( hash in FILEHASH_BLACKLIST )
+		{
+			NOTICE([
+				$note=Blacklisted_File_Downloaded,
+				$msg=fmt("Download of malicious file: <%s>", hash),
+				$blackbook_source = FILEHASH_BLACKLIST[hash]$source,
+				$blackbook_record = fmt("%s", r)
+				]);
+			return;
+		}
 	}
 }
+
+

@@ -1,3 +1,3 @@
-#fields	blacklisted_ip	source
-184.72.255.211	"spidey senses"
-172.27.45.67	"false alarm"
+#fields	ip	source	date_added
+184.72.255.211	spidey senses	2015-03-03
+172.27.45.67	false alarm	2015-03-02
