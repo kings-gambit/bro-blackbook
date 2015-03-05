@@ -5,6 +5,7 @@ import re
 import sys
 from glob import glob
 from datetime import datetime
+from termcolor import colored
 
 # find the directory where this script is located
 my_dir = os.path.dirname(os.path.realpath(__file__))
@@ -13,7 +14,7 @@ my_dir = os.path.dirname(os.path.realpath(__file__))
 brodata_files = glob("**/*.brodata")
 
 def error( msg ):
-	print "[ERROR] " + msg
+	print colored("[FAIL] " + msg, 'red')
 	exit(1)
 
 def clean():
@@ -27,6 +28,8 @@ def clean():
 	
 		old.close()
 		new.close()
+
+		# move the files over!
 
 def check():
 
@@ -51,16 +54,16 @@ def check():
 
 				else:
 					# make sure there are no empty lines
-					if line.isspace():
+					if not line or line.isspace():
 						error("found empty line in file: " + b)
 
 					# make sure every line has the proper number of fields
 					if len(line.split('\t')) != num_fields:
-						error("incorrect number of fields in line: " + wrong_num_fields)
+						error("incorrect number of fields in line: " + line)
 
 				line_num += 1
 
-		print "[{0}] passes!".format(b)
+		print colored("[PASS] " + b, 'green')
 
 if __name__ == '__main__':
 	if len(sys.argv) != 2 or '-h' in sys.argv or '--help' in sys.argv:
