@@ -1,3 +1,4 @@
+#separator \x09
 #fields	filehash	source	date_added
 f91ffee6a36b998841d467dde5f8977a	fbi	2015-03-03
 b	nsa	2015-03-02

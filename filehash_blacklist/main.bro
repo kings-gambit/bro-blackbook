@@ -10,7 +10,7 @@
 @load base/files/hash
 @load base/frameworks/files
 
-module Blackbook_FILEHASHES;
+module Blackbook_FILES;
 
 #--------------------------------------------------------------------------------
 #	Set up variables and types to be used in this script
