@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 from glob import glob
 from datetime import datetime
 
@@ -22,38 +23,44 @@ def clean():
 	
 		lines2keep = []
 		for line in old:
-			
+			pass
 	
 		old.close()
 		new.close()
 
 def check():
+
 	for b in brodata_files:
 		with open(b, 'r') as f:
-			lines = f.readlines()
+			line_num = 0
+			num_fields = 0
+			for line in f:
+				line = line.strip()
 
-		# make sure there are no empty lines
-		empty_line = next( l for l in lines if l.isspace() )
-		if empty_line:
-			error("found empty line in file: " + b)
+				if line_num == 0:
+					if line != r"#separator \x09":
+						error("no separator header in line0 of file: " + b)
 
-		# check for separator info in header
-		if lines[0] != r"#separator \x09":
-			error("no separator header in file: " + b)
+				elif line_num == 1:
+					if not line.startswith('#fields'):
+						error("no field string in lin1 of file: " + b)
+					else:
+						if len(line.split()) != len(line.split('\t')):
+							error("field string isn't tab-delimited: " + line)
+						num_fields = len(line.split('\t')) - 1
 
-		# check for #fields info in header
-		field_string = lines[1]
-		if not field_string.startswith("#fields"):
-			error("no separator header in file: " + b)
+				else:
+					# make sure there are no empty lines
+					if line.isspace():
+						error("found empty line in file: " + b)
 
-		# make sure field string is tab delimited
-		if len(field_string.split()) != len(field_string.split('\t')):
-			error("field string isn't tab-delimited: " + field_string)
-		num_fields = len(field_string.split('\t')) - 1
+					# make sure every line has the proper number of fields
+					if len(line.split('\t')) != num_fields:
+						error("incorrect number of fields in line: " + wrong_num_fields)
 
-		# make sure every line has the proper number of fields
-			
-		
+				line_num += 1
+
+		print "[{0}] passes!".format(b)
 
 if __name__ == '__main__':
 	if len(sys.argv) != 2 or '-h' in sys.argv or '--help' in sys.argv:
