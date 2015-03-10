@@ -18,6 +18,7 @@ def error( msg ):
 	exit(1)
 
 def clean():
+	print 'CLEANING...'
 	for b in brodata_files:
 		old = open(b, 'r')
 		new = open(b + '.tmp', 'w')
@@ -32,7 +33,7 @@ def clean():
 		# move the files over!
 
 def check():
-
+	print 'CHECKING...'
 	for b in brodata_files:
 		with open(b, 'r') as f:
 			line_num = 0

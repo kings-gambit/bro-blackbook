@@ -3,14 +3,29 @@
 #		Nicholas Siow | compilewithstyle@gmail.com
 #	
 #	Description:
-#		Looks for MD5 / SHA1 / SHA256 hashes in the flow of files
-#		across the network
+#		Reads from a list of blacklisted filehashes and writes to
+#		`blackbook_filehash.log` if any seen hashes match these blacklists
 #--------------------------------------------------------------------------------
 
 @load base/files/hash
 @load base/frameworks/files
 
-module Blackbook_FILES;
+module BlackbookFilehash;
+
+#--------------------------------------------------------------------------------
+#	Set up variables for the new logging stream
+#--------------------------------------------------------------------------------
+
+export
+{
+	redef enum Log::ID += { LOG };
+
+	redef record Files::Info += {
+		alert_subject: string &log &optional;
+	};
+
+	global log_blackbook_filehash: event ( rec:Files::Info );
+}
 
 #--------------------------------------------------------------------------------
 #	Set up variables and types to be used in this script
@@ -28,11 +43,6 @@ type Val: record
 
 # global blacklist variable that will be synchronized across nodes
 global FILEHASH_BLACKLIST: table[string] of Val &synchronized;
-
-# create a new notice type
-redef enum Notice::Type += {
-	Blacklisted_File_Downloaded
-};
 
 #--------------------------------------------------------------------------------
 #	Define a function to reconnect to the database and update the blacklist
@@ -61,13 +71,12 @@ function stream_blacklist()
 
 event Input::end_of_data( name:string, source:string )
 {
-		if( name != "filehashblacklist" )
-			return;
+	if( name != "filehashblacklist" )
+		return;
 
-		print "FILEHASH_BLACKLIST.BRO -----------------------------------------------";
-		print "Succesfully imported FILEHASH_BLACKLIST:";
-		print FILEHASH_BLACKLIST;
-		print "FILEHASH_BLACKLIST.BRO -----------------------------------------------";
+	print "FILEHASH_BLACKLIST.BRO -----------------------------------------------";
+	print FILEHASH_BLACKLIST;
+	print "----------------------------------------------------------------------";
 }
 
 #--------------------------------------------------------------------------------
@@ -77,61 +86,58 @@ event Input::end_of_data( name:string, source:string )
 event bro_init()
 {
 	stream_blacklist();
+	Log::create_stream(BlackbookFilehash::LOG, [$columns=Files::Info, $ev=log_blackbook_filehash]);
 }
 
 #--------------------------------------------------------------------------------
-#	Hook into the LOG_FILES event and raise a notice
-# if any of the specified filehashes are seen
+#	Hook into the normal logging event and create an entry in the blackbook
+#	log if the entry meets the desired criteria
 #--------------------------------------------------------------------------------
 
 event Files::log_files( r:Files::Info )
 {
-	local hash: string;
+    local hash: string;
+	local alert_subject: string = "";
+	local new_rec: Files::Info;
 
-	if( r?$md5 )
-	{
-		hash = r$md5;
-		if( hash in FILEHASH_BLACKLIST )
-		{
-			NOTICE([
-				$note=Blacklisted_File_Downloaded,
-				$msg=fmt("Download of malicious file: <%s>", hash),
-				$blackbook_source = FILEHASH_BLACKLIST[hash]$source,
-				$blackbook_record = fmt("%s", r)
-				]);
-			return;
-		}
-	}
+    if( r?$md5 )
+    {
+        hash = r$md5;
+        if( hash in FILEHASH_BLACKLIST )
+        {
+			alert_subject = fmt("Malicious file downloaded: %s", hash);
+			new_rec = r;
+			new_rec$alert_subject = alert_subject;
+        }
+    }
 
-	if( r?$sha1 )
-	{
-		hash = r$sha1;
-		if( hash in FILEHASH_BLACKLIST )
-		{
-			NOTICE([
-				$note=Blacklisted_File_Downloaded,
-				$msg=fmt("Download of malicious file: <%s>", hash),
-				$blackbook_source = FILEHASH_BLACKLIST[hash]$source,
-				$blackbook_record = fmt("%s", r)
-				]);
-			return;
-		}
-	}
+    else if( r?$sha1 )
+    {
+        hash = r$sha1;
+        if( hash in FILEHASH_BLACKLIST )
+        {
+			alert_subject = fmt("Malicious file downloaded: %s", hash);
+			new_rec = r;
+			new_rec$alert_subject = alert_subject;
+        }
+    }
 
-	if( r?$sha256 )
+    else if( r?$sha256 )
+    {
+        hash = r$sha256;
+        if( hash in FILEHASH_BLACKLIST )
+        {
+			alert_subject = fmt("Malicious file downloaded: %s", hash);
+			new_rec = r;
+			new_rec$alert_subject = alert_subject;
+        }
+    }
+
+	# if a malicious file was found and the alert subject was changed,
+	# then log this file
+	if( alert_subject != "" ) 
 	{
-		hash = r$sha256;
-		if( hash in FILEHASH_BLACKLIST )
-		{
-			NOTICE([
-				$note=Blacklisted_File_Downloaded,
-				$msg=fmt("Download of malicious file: <%s>", hash),
-				$blackbook_source = FILEHASH_BLACKLIST[hash]$source,
-				$blackbook_record = fmt("%s", r)
-				]);
-			return;
-		}
+		Log::write( BlackbookFilehash::LOG, new_rec );
 	}
 }
-
 

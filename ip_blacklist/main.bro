@@ -3,13 +3,28 @@
 #		Nicholas Siow | compilewithstyle@gmail.com
 #	
 #	Description:
-#		Reads from a list of blacklisted IPs and raises a NOTICE
-#		if these connections are seen anywhere
+#		Reads from a list of blacklisted IPs and writes to `blackbook_ip.log`
+#		if any seen IPs match these blacklists
 #--------------------------------------------------------------------------------
 
 @load base/protocols/conn
 
-module Blackbook_IP;
+module BlackbookIP;
+
+#--------------------------------------------------------------------------------
+#	Set up variables for the new logging stream
+#--------------------------------------------------------------------------------
+
+export
+{
+	redef enum Log::ID += { LOG };
+
+	redef record Conn::Info += {
+		alert_subject: string &log &optional;
+	};
+
+	global log_blackbook_ip: event ( rec:Conn::Info );
+}
 
 #--------------------------------------------------------------------------------
 #	Set up variables and types to be used in this script
@@ -28,16 +43,11 @@ type Val: record
 # global blacklist variable that will be synchronized across nodes
 global IP_BLACKLIST: table[addr] of Val &synchronized;
 
-# create a new notice type
-redef enum Notice::Type += {
-	Conn_to_Blacklisted_IP
-};
-
 #--------------------------------------------------------------------------------
 #	Define a function to reconnect to the database and update the blacklist
 #--------------------------------------------------------------------------------
 
-function stream_blacklist()
+function stream_ipblacklist()
 {
 	# reset the existing table
 	IP_BLACKLIST = table();
@@ -63,10 +73,9 @@ event Input::end_of_data( name:string, source:string )
 	if( name != "ipblacklist" )
 		return;
 
-	print "IP_BLACKLIST.BRO -----------------------------------------------";
-	print "Succesfully imported IP_BLACKLIST:";
+	print "IP_BLACKLIST.BRO -----------------------------------------------------";
 	print IP_BLACKLIST;
-	print "IP_BLACKLIST.BRO -----------------------------------------------";
+	print "----------------------------------------------------------------------";
 }
 
 #--------------------------------------------------------------------------------
@@ -75,12 +84,13 @@ event Input::end_of_data( name:string, source:string )
 
 event bro_init()
 {
-	stream_blacklist();
+	stream_ipblacklist();
+	Log::create_stream(BlackbookIP::LOG, [$columns=Conn::Info, $ev=log_blackbook_ip]);
 }
 
 #--------------------------------------------------------------------------------
-#	Hook into the CONNECTION_STATE_REMOVE event and raise a notice
-#	if any of the IPs are seen
+#	Hook into the normal logging event and create an entry in the blackbook
+#	log if the entry meets the desired criteria
 #--------------------------------------------------------------------------------
 
 event Conn::log_conn( c:Conn::Info )
@@ -90,22 +100,18 @@ event Conn::log_conn( c:Conn::Info )
 
 	if( orig in IP_BLACKLIST )
 	{
-		NOTICE([
-			$note=Conn_to_Blacklisted_IP,
-			$msg=fmt("Connection to blacklisted IP: <%s>", orig),
-			$blackbook_source = IP_BLACKLIST[orig]$source,
-			$blackbook_record = fmt("%s", c)
-			]);
+		local alert_subject: string = fmt("Connection to blacklisted IP: %s", orig);
+		local new_rec: Conn::Info = c;
+		c$alert_subject = alert_subject;
+		Log::write( BlackbookIP::LOG, new_rec );
 		return;
 	}
 	else if( resp in IP_BLACKLIST )
 	{
-		NOTICE([
-			$note=Conn_to_Blacklisted_IP,
-			$msg=fmt("Connection to blacklisted IP: <%s>", resp),
-			$blackbook_source = IP_BLACKLIST[resp]$source,
-			$blackbook_record = fmt("%s", c)
-			]);
+		alert_subject = fmt("Connection to blacklisted IP: %s", resp);
+		new_rec = c;
+		c$alert_subject = alert_subject;
+		Log::write( BlackbookIP::LOG, new_rec );
 		return;
 	}
 }
