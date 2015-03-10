@@ -10,7 +10,7 @@
 #@load base/protocols/conn
 
 # FIXME change this to the name of the new module, follow casing example
-#module BlackbookIP;
+#module BlackbookIp;
 
 #--------------------------------------------------------------------------------
 #	Set up variables for the new logging stream
@@ -20,10 +20,10 @@ export
 {
 	redef enum Log::ID += { LOG };
 
-	# FIXME add the alert subject string to whatever Info record you want to use
+	# FIXME add the alert info string to whatever Info record you want to use
 	#redef record Conn::Info += {
-	#	alert_subject: string &log &optional;
-	#};
+		alert_json: string &log &optional;
+	};
 
 	# FIXME change the name of the event so that it doesn't conflict with
 	# other logging events.. also change the module of Info
@@ -101,13 +101,11 @@ event Input::end_of_data( name:string, source:string )
 
 event bro_init()
 {
-	# FIXME change this to be the correct stream function declared earlier
-	# in this file
-	stream_ipblacklist();
+	stream_blacklist();
 
 	# FIXME change the logging ID, info type, and event here to match what you
 	# have specified above
-	#Log::create_stream(BLACKBOOK::IP, [$columns=Conn::Info, $ev=log_blackbookip]);
+	#Log::create_stream(BlackbookIp::LOG, [$columns=Conn::Info, $ev=log_blackbook_ip]);
 }
 
 #--------------------------------------------------------------------------------
@@ -122,23 +120,27 @@ event bro_init()
 
 #event Conn::log_conn( c:Conn::Info )
 #{
-#	local orig: addr = c$id$orig_h;
-#	local resp: addr = c$id$resp_h;
+#    local orig: addr = c$id$orig_h;
+#    local resp: addr = c$id$resp_h;
 #
-#	if( orig in IP_BLACKLIST )
-#	{
-#		local alert_subject: string = fmt("Connection to blacklisted IP: %s", orig);
-#		local new_rec: Conn::Info = c;
-#		c$alert_subject = alert_subject;
-#		Log::write( BlackbookIP::LOG, new_rec );
-#		return;
-#	}
-#	else if( resp in IP_BLACKLIST )
-#	{
-#		alert_subject = fmt("Connection to blacklisted IP: %s", resp);
-#		new_rec = c;
-#		c$alert_subject = alert_subject;
-#		Log::write( BlackbookIP::LOG, new_rec );
-#		return;
-#	}
+#    if( orig in IP_BLACKLIST )
+#    {
+#        NOTICE([
+#            $note=Conn_to_Blacklisted_IP,
+#            $msg=fmt("Connection to blacklisted IP: <%s>", orig),
+#            $blackbook_source = IP_BLACKLIST[orig]$source,
+#            $blackbook_record = fmt("%s", c)
+#            ]);
+#        return;
+#    }
+#    else if( resp in IP_BLACKLIST )
+#    {
+#        NOTICE([
+#            $note=Conn_to_Blacklisted_IP,
+#            $msg=fmt("Connection to blacklisted IP: <%s>", resp),
+#            $blackbook_source = IP_BLACKLIST[resp]$source,
+#            $blackbook_record = fmt("%s", c)
+#            ]);
+#        return;
+#    }
 #}

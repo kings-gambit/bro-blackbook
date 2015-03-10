@@ -9,7 +9,7 @@
 
 @load base/protocols/conn
 
-module BlackbookIP;
+module BlackbookIp;
 
 #--------------------------------------------------------------------------------
 #	Set up variables for the new logging stream
@@ -20,7 +20,7 @@ export
 	redef enum Log::ID += { LOG };
 
 	redef record Conn::Info += {
-		alert_subject: string &log &optional;
+		alert_json: string &log &optional;
 	};
 
 	global log_blackbook_ip: event ( rec:Conn::Info );
@@ -47,7 +47,7 @@ global IP_BLACKLIST: table[addr] of Val &synchronized;
 #	Define a function to reconnect to the database and update the blacklist
 #--------------------------------------------------------------------------------
 
-function stream_ipblacklist()
+function stream_blacklist()
 {
 	# reset the existing table
 	IP_BLACKLIST = table();
@@ -84,8 +84,8 @@ event Input::end_of_data( name:string, source:string )
 
 event bro_init()
 {
-	stream_ipblacklist();
-	Log::create_stream(BlackbookIP::LOG, [$columns=Conn::Info, $ev=log_blackbook_ip]);
+	stream_blacklist();
+	Log::create_stream(BlackbookIp::LOG, [$columns=Conn::Info, $ev=log_blackbook_ip]);
 }
 
 #--------------------------------------------------------------------------------
@@ -93,25 +93,28 @@ event bro_init()
 #	log if the entry meets the desired criteria
 #--------------------------------------------------------------------------------
 
-event Conn::log_conn( c:Conn::Info )
+event Conn::log_conn( r:Conn::Info )
 {
-	local orig: addr = c$id$orig_h;
-	local resp: addr = c$id$resp_h;
+	local alert_subject: string = "";
+	local alert_source: string = "";
+
+	local orig: addr = r$id$orig_h;
+	local resp: addr = r$id$resp_h;
 
 	if( orig in IP_BLACKLIST )
 	{
-		local alert_subject: string = fmt("Connection to blacklisted IP: %s", orig);
-		local new_rec: Conn::Info = c;
-		c$alert_subject = alert_subject;
-		Log::write( BlackbookIP::LOG, new_rec );
-		return;
+		alert_subject = fmt("Connection to blacklisted IP: %s", orig);
+		alert_source = IP_BLACKLIST[orig]$source;
 	}
 	else if( resp in IP_BLACKLIST )
 	{
 		alert_subject = fmt("Connection to blacklisted IP: %s", resp);
-		new_rec = c;
-		c$alert_subject = alert_subject;
-		Log::write( BlackbookIP::LOG, new_rec );
-		return;
+		alert_source = IP_BLACKLIST[resp]$source;
+	}
+
+	if( alert_subject != "" )
+	{
+		r$alert_json = fmt( "{ alert_subject: \"%s\", alert_source: \"%s\" }", alert_subject, alert_source );
+		Log::write( BlackbookIp::LOG, r );
 	}
 }

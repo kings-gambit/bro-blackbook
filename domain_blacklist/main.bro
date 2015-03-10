@@ -3,13 +3,28 @@
 #		Nicholas Siow | compilewithstyle@gmail.com
 #	
 #	Description:
-#		Checks the URL of each web connection and raises a NOTICE if
-#		any of them match one of the blacklisted URLs
+#		Reads from a list of blacklisted domains and writes to
+#		`blackbook_domain.log` if any seen domains match that blacklist
 #--------------------------------------------------------------------------------
 
 @load base/protocols/http
 
-module Blackbook_URL;
+module BlackbookDomain;
+
+#--------------------------------------------------------------------------------
+#	Set up variables for the new logging stream
+#--------------------------------------------------------------------------------
+
+export
+{
+	redef enum Log::ID += { LOG };
+
+	redef record HTTP::Info += {
+		alert_json: string &log &optional;
+	};
+
+	global log_blackbook_domain: event ( rec:HTTP::Info );
+}
 
 #--------------------------------------------------------------------------------
 #	Set up variables and types to be used in this script
@@ -26,13 +41,7 @@ type Val: record
 };
 
 # global blacklist variable that will be synchronized across nodes
-# global IP_BLACKLIST: table[addr] of Val &synchronized;
-global URL_BLACKLIST: table[string] of Val &synchronized;
-
-# create a new notice type
-redef enum Notice::Type += {
-	Blacklisted_URL_Visited
-};
+global DOMAIN_BLACKLIST: table[string] of Val &synchronized;
 
 #--------------------------------------------------------------------------------
 #	Define a function to reconnect to the database and update the blacklist
@@ -41,15 +50,15 @@ redef enum Notice::Type += {
 function stream_blacklist()
 {
 	# reset the existing table
-	URL_BLACKLIST = table();
+	DOMAIN_BLACKLIST = table();
 
 	# add_table call to repopulate the table
 	Input::add_table([
-		$source="/Users/nsiow/Dropbox/code/bro/blackbook/blacklists/url_blacklist.brodata",
-		$name="urlblacklist",
+		$source="/Users/nsiow/Dropbox/code/bro/blackbook/blacklists/domain_blacklist.brodata",
+		$name="domainblacklist",
 		$idx=Idx,
 		$val=Val,
-		$destination=URL_BLACKLIST,
+		$destination=DOMAIN_BLACKLIST,
 		$mode=Input::REREAD
 		]);
 }
@@ -61,13 +70,12 @@ function stream_blacklist()
 
 event Input::end_of_data( name:string, source:string )
 {
-		if( name != "urlblacklist" )
-			return;
+	if( name != "domainblacklist" )
+		return;
 
-		print "URL_BLACKLIST.BRO -----------------------------------------------";
-		print "Succesfully imported URL_BLACKLIST:";
-		print URL_BLACKLIST;
-		print "URL_BLACKLIST.BRO -----------------------------------------------";
+	print "DOMAIN_BLACKLIST.BRO -----------------------------------------------------";
+	print DOMAIN_BLACKLIST;
+	print "----------------------------------------------------------------------";
 }
 
 #--------------------------------------------------------------------------------
@@ -77,44 +85,28 @@ event Input::end_of_data( name:string, source:string )
 event bro_init()
 {
 	stream_blacklist();
+	Log::create_stream(BlackbookDomain::LOG, [$columns=HTTP::Info, $ev=log_blackbook_domain]);
 }
 
 #--------------------------------------------------------------------------------
-#	Hook into the LOG_HTTP event and raise a notice
-#	if any of the URLs
+#	Hook into the normal logging event and create an entry in the blackbook
+#	log if the entry meets the desired criteria
 #--------------------------------------------------------------------------------
 
 event HTTP::log_http( r:HTTP::Info )
 {
-	if( r?$host && r?$uri )
-	{
-		# clean leading/trailing characters from the host
-		local host: string = r$host;
-		host = sub( host, /^http:\/\//, "" );
-		host = sub( host, /^www\./, "" );
+    if( r?$host )
+    {
+        # clean leading/trailing characters from the host
+        local host: string = sub( r$host, /^www\./, "" );
 
-		# concatenate the host and uri to create a full URL string
-		local url: string = string_cat( host, r$uri );
+        if( host in DOMAIN_BLACKLIST )
+        {
+			local alert_subject: string = fmt("Malicious domain visited: %s", host);
+			local alert_source: string = DOMAIN_BLACKLIST[host]$source;
+			r$alert_json = fmt( "{ alert_subject: \"%s\", alert_source: \"%s\" }", alert_subject, alert_source );
 
-		if( host in URL_BLACKLIST )
-		{
-			NOTICE([
-				$note=Blacklisted_URL_Visited,
-				$msg=fmt("Blacklisted url visited: %s", host),
-				$blackbook_source = URL_BLACKLIST[host]$source,
-				$blackbook_record = fmt("%s", r)
-				]);
-			return;
-		}
-		else if( url in URL_BLACKLIST )
-		{
-			NOTICE([
-				$note=Blacklisted_URL_Visited,
-				$msg=fmt("Blacklisted url visited: %s", url),
-				$blackbook_source = URL_BLACKLIST[url]$source,
-				$blackbook_record = fmt("%s", r)
-				]);
-			return;
-		}
-	}
+			Log::write( BlackbookDomain::LOG, r );
+        }
+    }
 }
