@@ -5,12 +5,13 @@ require 'optparse'
 
 # mine
 #require_relative './lib/brodata_handler.rb'
-#require_relative './lib/reporter.rb'
+require_relative './lib/reporter.rb'
 require_relative './lib/log_finder.rb'
 require_relative './lib/config_parser.rb'
 require_relative './lib/debugger.rb'
 require_relative './lib/arg_parser.rb'
 require_relative './lib/log_reader.rb'
+require_relative './lib/throttler.rb'
 
 #--------------------------------------------------------------------------------
 #	global variables
@@ -32,6 +33,7 @@ def main
 	#   entire class)
 	d = Debugger.new "Main"
 	d.debugging_on if args.debug
+	d.color_on if args.color
 	d.debug "Received arguments: #{args}"
 
 	# read in configuration file
@@ -47,10 +49,18 @@ def main
 		LogFinder.verify_logs args.files
 	end
 
+	# create a Throttler object based on the filepath given in the
+	#   configuration
+	Throttler.setup config['throttle_db']
+
 	# iterate through the logs and have LogReader parse each of them.
 	#   send the results to the Reporter class
 	logs.each do |log|
 		data = LogReader.parse log
+
+		data.each do |datum|
+			Reporter.report datum
+		end
 	end
 
 end

@@ -1,14 +1,14 @@
-=begin
-
-	Author:
-		Nicholas Siow | compilewithstyle@gmail.com
-
-	Description:
-		Defines the LogFinder class for finding/verifying the logs to be used
-		in the bookie.rb script. Makes sure that the logs exist and contains
-		logic for finding the most recent logs if requested
-
-=end
+#--------------------------------------------------------------------------------
+#
+#	Author:
+#		Nicholas Siow | compilewithstyle@gmail.com
+#
+#	Description:
+#		Defines the LogFinder class for finding/verifying the logs to be used
+#		in the bookie.rb script. Makes sure that the logs exist and contains
+#		logic for finding the most recent logs if requested
+#
+#--------------------------------------------------------------------------------
 
 # stdlib
 

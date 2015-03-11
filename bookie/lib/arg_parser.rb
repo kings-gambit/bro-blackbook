@@ -1,12 +1,13 @@
-=begin
-
-		Author:
-			Nicholas Siow | compilewithstyle@gmail.com
-
-		Description:
-			Custom argument parser that checks for existence/
-			validity of required arguments
-=end
+#--------------------------------------------------------------------------------
+#
+#		Author:
+#			Nicholas Siow | compilewithstyle@gmail.com
+#
+#		Description:
+#			Custom argument parser that checks for existence/
+#			validity of required arguments
+#
+#--------------------------------------------------------------------------------
 
 # stdlib
 require 'optparse'
@@ -24,6 +25,7 @@ class ArgParser
 	def self.parse_args
     	options = OpenStruct.new
 		options.files = []
+		options.color = false
 		options.debug = false
 		options.use_recent = false
 
@@ -41,6 +43,10 @@ class ArgParser
     	    opts.on( '-r', '--use-recent', 'Use the most recent set of logs' ) do |use_recent|
     	        options.use_recent = use_recent
     	    end
+
+			opts.on( '-c', '--color', 'Use color in debugging statements' ) do |color|
+				options.color = color
+			end
 
     	    opts.on( '-h', '--help', 'Print this message and exit' ) do |help|
     	        puts opts

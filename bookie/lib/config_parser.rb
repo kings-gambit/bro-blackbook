@@ -1,19 +1,20 @@
-=begin
-
-	Author:
-		Nicholas Siow | compilewithstyle@gmail.com
-
-	Description:
-		Defines the ConfigParser class to find/parse the configuration file
-		for the bookie.rb script and make sure the values are existent/valid
-
-=end
+#--------------------------------------------------------------------------------
+#
+#	Author:
+#		Nicholas Siow | compilewithstyle@gmail.com
+#
+#	Description:
+#		Defines the ConfigParser class to find/parse the configuration file
+#		for the bookie.rb script and make sure the values are existent/valid
+#
+#--------------------------------------------------------------------------------
 
 # stdlib
 require 'yaml'
 
 # mine
 require_relative './debugger.rb'
+require_relative './throttler.rb'
 
 class ConfigParser
 

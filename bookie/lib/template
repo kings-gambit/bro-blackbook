@@ -1,16 +1,17 @@
-=begin
-
-	Author:
-		Nicholas Siow | compilewithstyle@gmail.com
-
-	Description:
-		FIXME
-
-=end
+#--------------------------------------------------------------------------------
+#
+#	Author:
+#		Nicholas Siow | compilewithstyle@gmail.com
+#
+#	Description:
+#		FIXME
+#
+#--------------------------------------------------------------------------------
 
 # stdlib
 
 # mine
+require_relative './debugger.rb'
 
 class #FIXME
 

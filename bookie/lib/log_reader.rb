@@ -1,19 +1,20 @@
-=begin
-
-	Author:
-		Nicholas Siow | compilewithstyle@gmail.com
-
-	Description:
-		Defines the LogReader class which deals with parsing
-		through the given log and converting each line into
-		a Field->Value hash
-
-=end
+#--------------------------------------------------------------------------------
+#
+#	Author:
+#		Nicholas Siow | compilewithstyle@gmail.com
+#
+#	Description:
+#		Defines the LogReader class which deals with parsing
+#		through the given log and converting each line into
+#		a Field->Value hash
+#
+#--------------------------------------------------------------------------------
 
 # stdlib
 require 'zlib'
 
 # mine
+require_relative './debugger.rb'
 
 class LogReader
 
@@ -23,7 +24,7 @@ class LogReader
 
 
 	def self.parse( logfile )
-	
+
 		# read the entire log into memory (faster and
 		#   easier to play with, but a little unsafe?)
 		lines = 
@@ -31,7 +32,7 @@ class LogReader
 			Zlib::GzipReader.new( File.open(logfile, 'r') )
 		else
 			File.open( logfile, 'r' )
-		end.lines.map &:chomp
+		end.each_line.to_a.map &:chomp
 
 		@@d.debug "Read #{lines.size} lines from file #{logfile}"
 
@@ -45,7 +46,7 @@ class LogReader
 		else
 			header = header.split("\t")[1..-1]
 		end
-		@@d.debug "Found header: #{header}"
+		@@d.debug "\tFound header with #{header.size} items"
 
 		data = []
 
@@ -63,6 +64,7 @@ class LogReader
 		@@d.debug "Done reading logfile: #{logfile}"
 
 		return data
+
 	end
 
 end
