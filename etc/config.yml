@@ -1,7 +1,0 @@
-bro_log_dir: '/opt/bro/logs/'
-
-mailing_list:
-  - 'n.siow@wustl.edu'
-  - 'compilewithstyle@gmail.com'
-
-max_alerts: 50

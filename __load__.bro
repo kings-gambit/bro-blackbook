@@ -1,3 +1,3 @@
-@load ./ip_blacklist
-@load ./filehash_blacklist
-@load ./domain_blacklist
+@load ./ips
+@load ./hashes
+@load ./domains

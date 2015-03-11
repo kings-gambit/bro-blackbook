@@ -1,4 +1,5 @@
 #separator \x09
 #fields	url	source	date_to_remove
+google.com	spidey_senses	2015-03-03
+facebook.com	false_alarm	2015-03-02
 reddit.com/r/programming	-	never
-sinaimg.cn	-	never
