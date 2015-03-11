@@ -11,6 +11,7 @@
 #--------------------------------------------------------------------------------
 
 # stdlib
+require 'set'
 
 # 3rd party
 require 'sqlite3'
@@ -27,7 +28,7 @@ class Throttler
 	def self.setup( throttle_db_fp )
 
 		# initialize the set of items to throttle
-		@@throttle_on = {}
+		@@throttle_on = Set.new
 
 		# class instance of the sqlite database handler
 		@@db = nil
@@ -39,6 +40,7 @@ class Throttler
 		else
 			@@d.debug "#{throttle_db_fp} does not exist, creating now!"
 			Throttler.create_db throttle_db_fp
+			read_db throttle_db_fp
 		end
 		
 	end
@@ -90,19 +92,39 @@ class Throttler
 		@@d.debug "\tSuccess! Retrieved #{rows.size} values from database: #{throttle_db_fp}"
 
 		rows.each do |row|
-			ip, tag, expire = row
+			ip, tag, _ = row
 
-			@@throttle_on[ [ip,tag] ] = expire
+			@@throttle_on << [ip,tag]
 		end
 
 		@@d.debug "Throttle now has #{@@throttle_on.size} items"
 
 	end
 
-	def self.write_db( wustl_ip, tag )
+	def self.write_db( item )
+		@@d.debug "Attempting to write new throttle item: #{item}"
+		begin
+			@@db.execute "INSERT INTO throttle VALUES (?, ?, Date('now', '1 days'));", item
+		rescue Exception => e
+			@@d.debug "\tFailed to insert item: #{item}: #{e}"
+		end
+		@@d.debug "Success! Wrote item #{item} to throttle database!"
 	end
 
 	def self.should_throttle?( wustl_ip, tag )
+		if wustl_ip.nil? || tag.nil?
+			return false
+		end
+
+		item = [ wustl_ip, tag ]
+
+		if @@throttle_on.include? tag
+			return true
+		else
+			@@throttle_on << item
+			write_db item
+			return false
+		end
 	end
 
 	at_exit { @@db.close unless @@db.nil? }
