@@ -6,11 +6,11 @@
 		Nicholas Siow | compilewithstyle@gmail.com
 
 	Description:
-		Script to parse all .brodata files for the bro-blacklist and make
+		Script to parse all .brodata files for the bro-blackbook and make
 		sure they are all correctly formatted to be read in by bro
 
 		Also performs cleanup duty by removing those lines that are
-		past their 'expiration date'
+		past their expiration date
 
 =end
 
