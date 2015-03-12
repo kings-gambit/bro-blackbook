@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Throttler - RDoc Documentation</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/throttler.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link">Object
+  
+</nav>
+
+    
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li ><a href="#method-c-create_db">::create_db</a>
+    
+    <li ><a href="#method-c-read_db">::read_db</a>
+    
+    <li ><a href="#method-c-setup">::setup</a>
+    
+    <li ><a href="#method-c-should_throttle-3F">::should_throttle?</a>
+    
+    <li ><a href="#method-c-write_db">::write_db</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./lib/template.html">template</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./ArgParser.html">ArgParser</a>
+  
+    <li><a href="./ConfigParser.html">ConfigParser</a>
+  
+    <li><a href="./Debugger.html">Debugger</a>
+  
+    <li><a href="./LogFinder.html">LogFinder</a>
+  
+    <li><a href="./LogReader.html">LogReader</a>
+  
+    <li><a href="./Reporter.html">Reporter</a>
+  
+    <li><a href="./Throttler.html">Throttler</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Throttler</h1>
+
+  <div id="description" class="description">
+    
+<p><a href="Throttler.html">Throttler</a> class to limit the amount of
+duplicate/similar emails that are being sent out. The <a
+href="Reporter.html">Reporter</a> class will check in with this before
+sending out an email.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-create_db" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">create_db</span><span
+            class="method-args">( fp )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>If the database does not exist, thie function is privately called to try to
+create it</p>
+
+<h4 id="method-c-create_db-label-Params">Params<span><a href="#method-c-create_db-label-Params">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>fp</code> (<code>String</code>)
+<dd>
+<p>The filepath destination for the database to be created</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="create_db-source">
+            <pre><span class="ruby-comment"># File lib/throttler.rb, line 62</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">create_db</span>( <span class="ruby-identifier">fp</span> )
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Attempting to create new database at #{fp}&quot;</span>
+
+        <span class="ruby-comment"># define the string to be used for new database creation</span>
+        <span class="ruby-identifier">create_str</span> = <span class="ruby-string">&#39;create table throttle( ip VARCHAR(15) not null, tag VARCHAR(100) not null, expire_on DATE not null );&#39;</span>
+
+        <span class="ruby-comment"># try to apply the creation command to a new database at the specified filepath,</span>
+        <span class="ruby-comment">#   throw exception if this fails</span>
+        <span class="ruby-keyword">begin</span>
+                <span class="ruby-constant">SQLite3</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span>( <span class="ruby-identifier">fp</span> ) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">newdb</span><span class="ruby-operator">|</span>
+                        <span class="ruby-identifier">newdb</span>.<span class="ruby-identifier">execute</span> <span class="ruby-identifier">create_str</span>
+                <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">err</span> <span class="ruby-node">&quot;Failed to make database at #{fp}: #{e}&quot;</span>
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Succesfully created data at #{fp}&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- create_db-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- create_db-method -->
+
+    
+      <div id="method-c-read_db" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">read_db</span><span
+            class="method-args">( throttle_db_fp )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Connect to the database at the specified filepath and try to read its
+contents into a throttle-table</p>
+
+<h4 id="method-c-read_db-label-Params%3A">Params:<span><a href="#method-c-read_db-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>throttle_db_fp</code> (<code>String</code>)
+<dd>
+<p>The filepath for the database to be connected to</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="read_db-source">
+            <pre><span class="ruby-comment"># File lib/throttler.rb, line 87</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">read_db</span>( <span class="ruby-identifier">throttle_db_fp</span> )
+
+        <span class="ruby-comment"># try to connect to the database, fail otherwise</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Attempting to connect to sqlite database: #{throttle_db_fp}&quot;</span>
+        <span class="ruby-keyword">begin</span>
+                <span class="ruby-identifier">@@db</span> = <span class="ruby-constant">SQLite3</span><span class="ruby-operator">::</span><span class="ruby-constant">Database</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">throttle_db_fp</span>
+        <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">err</span> <span class="ruby-node">&quot;Failed to connect to database at #{fp}: #{e}&quot;</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;\tSuccess! Connected to sqlite database: #{throttle_db_fp}&quot;</span>
+
+        <span class="ruby-comment"># try to remove expired items, fail otherwise</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Attempting to remove old entries from database&quot;</span>
+        <span class="ruby-keyword">begin</span>
+                <span class="ruby-identifier">@@db</span>.<span class="ruby-identifier">execute</span> <span class="ruby-string">&#39;DELETE FROM throttle WHERE expire_on &lt;= Date(\now\);&#39;</span>
+        <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">err</span> <span class="ruby-node">&quot;Failed to remove old entries from throttle db: #{e}&quot;</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;\tSuccess! Removed old entries from database: #{throttle_db_fp}&quot;</span>
+
+        <span class="ruby-comment"># try to read in the table, fail otherwise</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-string">&quot;Attempting to read values from databse&quot;</span>
+        <span class="ruby-keyword">begin</span>
+                <span class="ruby-identifier">rows</span> = <span class="ruby-identifier">@@db</span>.<span class="ruby-identifier">execute</span> <span class="ruby-string">&#39;SELECT * FROM throttle;&#39;</span>
+        <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">err</span> <span class="ruby-node">&quot;Failed to read values from database: #{e}&quot;</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;\tSuccess! Retrieved #{rows.size} values from database: #{throttle_db_fp}&quot;</span>
+
+        <span class="ruby-comment"># for each row, read in the ip and tag (ignore the expire date) and build a Set</span>
+        <span class="ruby-comment"># from the data</span>
+        <span class="ruby-identifier">rows</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
+                <span class="ruby-identifier">ip</span>, <span class="ruby-identifier">tag</span>, <span class="ruby-identifier">_</span> = <span class="ruby-identifier">row</span>
+                <span class="ruby-identifier">@@throttle_on</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">ip</span>,<span class="ruby-identifier">tag</span>]
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Throttle now has #{@@throttle_on.size} items&quot;</span>
+
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- read_db-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- read_db-method -->
+
+    
+      <div id="method-c-setup" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">setup</span><span
+            class="method-args">( throttle_db_fp )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Connects the <a href="Throttler.html">Throttler</a> class to the database
+and reads in the throttle-table</p>
+
+<h4 id="method-c-setup-label-Params%3A">Params:<span><a href="#method-c-setup-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>throttle_db_fp</code> (<code>String</code>)
+<dd>
+<p>The filepath to the throttle database as given in the config file</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="setup-source">
+            <pre><span class="ruby-comment"># File lib/throttler.rb, line 36</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">setup</span>( <span class="ruby-identifier">throttle_db_fp</span> )
+
+        <span class="ruby-comment"># initialize the set of items to throttle</span>
+        <span class="ruby-identifier">@@throttle_on</span> = <span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>
+
+        <span class="ruby-comment"># class instance of the sqlite database handler</span>
+        <span class="ruby-identifier">@@db</span> = <span class="ruby-keyword">nil</span>
+
+        <span class="ruby-comment"># if the database exists, use it! otherwise, try to create an empty</span>
+        <span class="ruby-comment">#   throttle database</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">file?</span> <span class="ruby-identifier">throttle_db_fp</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;#{throttle_db_fp} exists, using it&quot;</span>
+                <span class="ruby-identifier">read_db</span> <span class="ruby-identifier">throttle_db_fp</span>
+        <span class="ruby-keyword">else</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;#{throttle_db_fp} does not exist, creating now!&quot;</span>
+                <span class="ruby-constant">Throttler</span>.<span class="ruby-identifier">create_db</span> <span class="ruby-identifier">throttle_db_fp</span>
+                <span class="ruby-identifier">read_db</span> <span class="ruby-identifier">throttle_db_fp</span>
+        <span class="ruby-keyword">end</span>
+        
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- setup-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- setup-method -->
+
+    
+      <div id="method-c-should_throttle-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">should_throttle?</span><span
+            class="method-args">( wustl_ip, tag )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Function to determine whether or not an item should be throttled. If so,
+then it returns true and performs no other action. If not, then it returns
+false and lets the item go by but then adds it to the current throttle set
+as well as the database</p>
+
+<h4 id="method-c-should_throttle-3F-label-Params%3A">Params:<span><a href="#method-c-should_throttle-3F-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>wustl_ip</code> (<code>String</code>)
+<dd>
+<p>the IP (as a string) of the WUSTL address to throttle on</p>
+</dd><dt><code>tag</code> (<code>String</code>)
+<dd>
+<p>a string describing the type of incident to throttle on</p>
+</dd></dl>
+
+<h4 id="method-c-should_throttle-3F-label-Returns%3A">Returns:<span><a href="#method-c-should_throttle-3F-label-Returns%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<ul><li>
+<p><code>true</code> or <code>false</code> based on whether or not the given
+item should be throttled</p>
+</li></ul>
+          
+          
+
+          
+          <div class="method-source-code" id="should_throttle-3F-source">
+            <pre><span class="ruby-comment"># File lib/throttler.rb, line 154</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">should_throttle?</span>( <span class="ruby-identifier">wustl_ip</span>, <span class="ruby-identifier">tag</span> )
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">wustl_ip</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">tag</span>.<span class="ruby-identifier">nil?</span>
+                <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span>
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-identifier">item</span> = [ <span class="ruby-identifier">wustl_ip</span>, <span class="ruby-identifier">tag</span> ]
+
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">@@throttle_on</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">tag</span>
+                <span class="ruby-keyword">return</span> <span class="ruby-keyword">true</span>
+        <span class="ruby-keyword">else</span>
+                <span class="ruby-identifier">@@throttle_on</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">item</span>
+                <span class="ruby-identifier">write_db</span> <span class="ruby-identifier">wustl_ip</span>, <span class="ruby-identifier">tag</span>
+                <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span>
+        <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- should_throttle-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- should_throttle-3F-method -->
+
+    
+      <div id="method-c-write_db" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">write_db</span><span
+            class="method-args">( wustl_ip, tag )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Writes a new throttling item to the database</p>
+
+<h4 id="method-c-write_db-label-Params%3A">Params:<span><a href="#method-c-write_db-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>wustl_ip</code> (<code>String</code>)
+<dd>
+<p>the IP (as a string) of the WUSTL address to throttle on</p>
+</dd><dt><code>tag</code> (<code>String</code>)
+<dd>
+<p>a string describing the type of incident to throttle on</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="write_db-source">
+            <pre><span class="ruby-comment"># File lib/throttler.rb, line 133</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">write_db</span>( <span class="ruby-identifier">wustl_ip</span>, <span class="ruby-identifier">tag</span> )
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Attempting to write new throttle item: #{wustl_ip},#{tag}&quot;</span>
+        <span class="ruby-keyword">begin</span>
+                <span class="ruby-identifier">@@db</span>.<span class="ruby-identifier">execute</span> <span class="ruby-string">&quot;INSERT INTO throttle VALUES (?, ?, Date(&#39;now&#39;, &#39;1 days&#39;));&quot;</span>, <span class="ruby-identifier">wustl_ip</span>, <span class="ruby-identifier">tag</span>
+        <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;\tFailed to insert item: #{wustl_ip},#{tag}: #{e}&quot;</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Success! Wrote item #{wustl_ip},#{tag} to throttle database!&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- write_db-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- write_db-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 4.0.0.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

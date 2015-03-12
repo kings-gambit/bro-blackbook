@@ -13,18 +13,28 @@
 require 'optparse'
 require 'ostruct'
 
+# 3rd party
+
 # mine
 require_relative './debugger.rb'
 
+=begin rdoc
+	ArgParser class to handle parsing options and arguments given via the command-line interface
+=end
 class ArgParser
 
 
 	@@d = Debugger.new "ArgParser"
 
-
+	# Parses ARGV to determine various runtime configuration options
+	#
+	# ==== Returns:
+	# - An OpenStruct object containing the configuration variables
+	#
 	def self.parse_args
     	options = OpenStruct.new
 		options.files = []
+		options.test = false
 		options.color = false
 		options.debug = false
 		options.use_recent = false
@@ -34,6 +44,10 @@ class ArgParser
 
     	    opts.on( '-f f1,f2,...', '--files f1,f2,...', Array, 'List of blackbook logs to process' ) do |files|
     	        options.files = files
+    	    end
+
+    	    opts.on( '-t', '--test', 'Run for testing purposes -- no emails will be sent' ) do |test|
+    	        options.test = test
     	    end
 
     	    opts.on( '-d', '--debug', 'Turn on program debugging' ) do |debug|

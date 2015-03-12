@@ -33,11 +33,18 @@ $colors = [
 	:cyan,
 ]
 
+=begin rdoc
+	A simple debugging/logging class that allows logging with progname tags and in various colors
+=end
 class Debugger
 
 	@@registered_obj_names = Set.new
 	@@color_hash = {}
+
+	# class variable that determines whether or not debugging should be enabled
 	@@debug = false
+
+	# class variable that determines if color should be used
 	@@color = false
 
 	#--------------------------------------------------------------------------------
@@ -45,7 +52,7 @@ class Debugger
 	#	Debugger instance
 	#--------------------------------------------------------------------------------
 
-	def initialize( obj_name )
+	def initialize( obj_name ) # :nodoc:
 
 		# make sure the object name hasn't been registered already
 		if @@registered_obj_names.include? obj_name
@@ -69,13 +76,14 @@ class Debugger
 			@@color_hash[@obj_name] = :default
 		end
 
-		p @@color_hash
 	end
 
 	#--------------------------------------------------------------------------------
 	#	function to enable debugging for ALL Debugger objects
 	#--------------------------------------------------------------------------------
 
+	# Function to turn on debugging for all objects
+	#
 	def debugging_on
 		@@debug = true
 	end
@@ -84,6 +92,8 @@ class Debugger
 	#	function to enable coloring for ALL Debugger objects
 	#--------------------------------------------------------------------------------
 
+	# Function to turn on colorized logging for all objects
+	#
 	def color_on
 		@@color = true
 
@@ -97,17 +107,32 @@ class Debugger
 	#	debug printing functions
 	#--------------------------------------------------------------------------------
 
+	# Print a message with an [ERROR] tag and exit the program
+	#
+	# ==== Params:
+	# +msg+ (+String+):: the message to be displayed
+	#
 	def err( msg )
 	    puts "[ERROR][#{@obj_name}]: #{msg}".colorize @@color_hash[@obj_name]
 	    exit 1
 	end
 	
+	# Print a message with a [WARN] tag if debugging is enabled
+	#
+	# ==== Params:
+	# +msg+ (+String+):: the message to be displayed
+	#
 	def warn( msg )
 		if @@debug
 	    	puts "[WARNING][#{@obj_name}]: #{msg}".colorize @@color_hash[@obj_name]
 		end
 	end
 	
+	# Print a message with a [DEBUG] tag if debugging is enabled
+	#
+	# ==== Params:
+	# +msg+ (+String+):: the message to be displayed
+	#
 	def debug( msg )
 		if @@debug
 	    	puts "[DEBUG][#{@obj_name}]: #{msg}".colorize @@color_hash[@obj_name]

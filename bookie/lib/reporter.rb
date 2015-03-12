@@ -10,22 +10,128 @@
 #--------------------------------------------------------------------------------
 
 # stdlib
+require 'fileutils'
+require 'securerandom'
 
 # 3rd party
+require 'json'
 
 # mine
 require_relative './debugger.rb'
 require_relative './throttler.rb'
 
+=begin
+	Reporter class that organizes the parsed data from Bro logs into an
+	email form and sends it. Checks with the Throttler to make sure emails
+	are not spammed.
+=end
 class Reporter
 
 	# create a new debugging object
 	@@d = Debugger.new "Reporter"
 
-	def self.send_email( data )
-		puts 'here'
+	# placeholder for the class mailing list
+	@@mailing_list
+
+	# Assign the given mailing list to the reporter class to use as TO addresses
+	#
+	# ==== Params:
+	# +mailing_list+ (+Array of String+):: An +Array+ containing the email addresses to be used
+	#
+	def self.setup( mailing_list )
+		@@mailing_list = mailing_list
 	end
 
+	# Prints the given data to a temporary file and sends it via MAILX
+	#
+	# ==== Params:
+	# +data+ (+Hash of String->String+):: a data hash containing the info from the Bro log line
+	#
+	# ==== Note:
+	# - The given +data+ hash must contain a properly-formatted +alert_json+ field
+	#
+	def self.send_email( data )
+
+		# parse the alert info out of the json string
+		alert_info = 
+		if data.has_key? 'alert_json'
+			parse_alert_json data['alert_json']
+		else
+			@@d.err "Line data was missing the field 'alert_json': #{data}"
+		end
+
+		@@d.debug "Prepping email with subject: #{alert_info['alert_subject']}"
+
+		# generate a random string for the email name
+		email_file = "/tmp/#{SecureRandom.hex}"
+		@@d.debug "\tCreated email file @ #{email_file}"
+
+		# open the file and write the contents of `data`
+		File.open( email_file, 'w' ) do |e|
+			# add meta information to the top of the email
+			e.puts "Subject = #{alert_info['alert_subject']}"
+			e.puts "Data source = #{alert_info['alert_source']}"
+			e.puts "Source file = #{data.delete 'source_file'}"
+			e.puts "User = #{data.delete 'user'}"
+			e.puts "\n\n"
+
+			# add the remainder of the alert
+			data.each do |field,value|
+				e.puts "#{field} = #{value}"
+			end
+		end
+
+		# send the email
+
+		# join the recipients into a single string
+		rcpt_string = @@mailing_list.join(',')
+		@@d.debug "\tSending to recipients: #{rcpt_string}"
+
+		# replace single quotes in subject/recipients that would mess with shell
+		alert_info['alert_subject'].gsub! "'", "\\'"
+		rcpt_string.gsub! "'", "\\'"
+
+		# create and run the system mailx command
+		cmd = "cat #{email_file} | mailx -s '#{alert_info['alert_subject']}' '#{rcpt_string}'"
+		@@d.debug "\tRunning command: #{cmd}"
+		system cmd
+
+		# delete it!
+		FileUtils.rm email_file
+		@@d.debug "\tDeleted email: #{email_file}"
+
+		exit
+	end
+
+	# Parses the alert_json field to get the alert subject and alert source
+	#
+	# ==== Params:
+	# +alert_json+ (+String+):: a +String+ representing a JSON dict with alert_subject and alert_source fields
+	#
+	# ==== Retuns:
+	# - a hash of String->String representing the data contained in the JSON string
+	#
+	def self.parse_alert_json( alert_json )
+
+		@@d.debug "Parsing alert json: #{alert_json}"
+
+		begin
+			return JSON.parse alert_json
+		rescue Exception => e
+			@@d.err "Failed to parse alert json: #{alert_json}"
+		end
+
+	end
+
+	# Parses the data from the Bro log line and returns the IPs/ports organized by whether or not
+	# they correspond to WUSTL hosts
+	#
+	# ==== Params:
+	# +data+ (+Hash of String->String+):: a data hash containing the info from the Bro log line
+	#
+	# ==== Returns:
+	# - a 2-element array in the form of [ wustl_info, other_info ], where each item is the 3-tuple of ts/ip/port
+	#   
 	def self.get_wustl_info( data )
 		
 		# go ahead and return nil unless all the required data is present
@@ -53,12 +159,28 @@ class Reporter
 
 	end
 
+	# Takes in WUSTL info and calls an external script to perform a user lookup
+	#
+	# ==== Params:
+	# +ts+ (+String+):: a UNIX-timestamp formatted string representing the time of connection
+	# +wustl_ip+ (+String+):: the *external* WUSTL IP
+	# +wustl_port+ (+String+):: the *external* WUSTL port
+	#
+	# ==== Returns:
+	# - a +String+ containing the user information
+	#
 	def self.usersearch( ts, wustl_ip, wustl_port )
-		@@d.debug "Attempting usersearch with info: #{ts} #{wustl_ip} #{wustl_port}"
 
-		return "?"
+		@@d.debug "Attempting usersearch with info: #{ts} #{wustl_ip} #{wustl_port}"
+		return "?" #FIXME
+
 	end
 
+	# Takes in a +Hash+ containing the line data and cals #send_email if it passes the Throttler check
+	#
+	# ==== Params:
+	# +data+ (+Hash of String->String+):: a data hash containing the info from the Bro log line
+	#
 	def self.report( data )
 		wustl_info, other_info = get_wustl_info data
 

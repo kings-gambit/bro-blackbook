@@ -3,8 +3,9 @@
 # stdlib
 require 'optparse'
 
+# 3rd party
+
 # mine
-#require_relative './lib/brodata_handler.rb'
 require_relative './lib/reporter.rb'
 require_relative './lib/log_finder.rb'
 require_relative './lib/config_parser.rb'
@@ -49,9 +50,13 @@ def main
 		LogFinder.verify_logs args.files
 	end
 
-	# create a Throttler object based on the filepath given in the
-	#   configuration
+	# set up the Throttler class with the throttle database filepath
+	#   given in the configuration
 	Throttler.setup config['throttle_db']
+
+	# set up the Reporter class with the throttle database filepath
+	#   given in the configuration
+	Reporter.setup config['mailing_list']
 
 	# iterate through the logs and have LogReader parse each of them.
 	#   send the results to the Reporter class

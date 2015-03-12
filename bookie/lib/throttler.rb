@@ -19,12 +19,20 @@ require 'sqlite3'
 # mine
 require_relative './debugger.rb'
 
+=begin rdoc
+	Throttler class to limit the amount of duplicate/similar emails that are being sent out.
+	The Reporter class will check in with this before sending out an email.
+=end
 class Throttler
 
-
-	# create a new debugging object
+	# create a new debugging object for the Throttler class
 	@@d = Debugger.new "Throttler"
 
+	# Connects the Throttler class to the database and reads in the throttle-table
+	#
+	# ==== Params:
+	# +throttle_db_fp+ (+String+):: The filepath to the throttle database as given in the config file
+	#
 	def self.setup( throttle_db_fp )
 
 		# initialize the set of items to throttle
@@ -33,7 +41,8 @@ class Throttler
 		# class instance of the sqlite database handler
 		@@db = nil
 
-		# create the database if it doesn't already exist
+		# if the database exists, use it! otherwise, try to create an empty
+		#   throttle database
 		if File.file? throttle_db_fp
 			@@d.debug "#{throttle_db_fp} exists, using it"
 			read_db throttle_db_fp
@@ -45,12 +54,19 @@ class Throttler
 		
 	end
 
+	# If the database does not exist, thie function is privately called to try to create it
+	#
+	# ==== Params
+	# +fp+ (+String+):: The filepath destination for the database to be created
+	#
 	def self.create_db( fp )
-
 		@@d.debug "Attempting to create new database at #{fp}"
 
+		# define the string to be used for new database creation
 		create_str = 'create table throttle( ip VARCHAR(15) not null, tag VARCHAR(100) not null, expire_on DATE not null );'
 
+		# try to apply the creation command to a new database at the specified filepath,
+		#   throw exception if this fails
 		begin
 			SQLite3::Database.new( fp ) do |newdb|
 				newdb.execute create_str
@@ -58,13 +74,19 @@ class Throttler
 		rescue Exception => e
 			@@d.err "Failed to make database at #{fp}: #{e}"
 		end
-		@@d.debug "Succesfully created data at #{fp}"
 
+		@@d.debug "Succesfully created data at #{fp}"
 	end
 
+	# Connect to the database at the specified filepath and try to read its contents
+	# into a throttle-table
+	#
+	# ==== Params:
+	# +throttle_db_fp+ (+String+):: The filepath for the database to be connected to
+	#
 	def self.read_db( throttle_db_fp )
 
-		# try to connect to the database
+		# try to connect to the database, fail otherwise
 		@@d.debug "Attempting to connect to sqlite database: #{throttle_db_fp}"
 		begin
 			@@db = SQLite3::Database.new throttle_db_fp
@@ -73,7 +95,7 @@ class Throttler
 		end
 		@@d.debug "\tSuccess! Connected to sqlite database: #{throttle_db_fp}"
 
-		# try to clean it
+		# try to remove expired items, fail otherwise
 		@@d.debug "Attempting to remove old entries from database"
 		begin
 			@@db.execute 'DELETE FROM throttle WHERE expire_on <= Date(\'now\');'
@@ -82,7 +104,7 @@ class Throttler
 		end
 		@@d.debug "\tSuccess! Removed old entries from database: #{throttle_db_fp}"
 
-		# try to read in the table
+		# try to read in the table, fail otherwise
 		@@d.debug "Attempting to read values from databse"
 		begin
 			rows = @@db.execute 'SELECT * FROM throttle;'
@@ -91,9 +113,10 @@ class Throttler
 		end
 		@@d.debug "\tSuccess! Retrieved #{rows.size} values from database: #{throttle_db_fp}"
 
+		# for each row, read in the ip and tag (ignore the expire date) and build a Set
+		# from the data
 		rows.each do |row|
 			ip, tag, _ = row
-
 			@@throttle_on << [ip,tag]
 		end
 
@@ -101,16 +124,33 @@ class Throttler
 
 	end
 
-	def self.write_db( item )
-		@@d.debug "Attempting to write new throttle item: #{item}"
+	# Writes a new throttling item to the database
+	#
+	# ==== Params:
+	# +wustl_ip+ (+String+):: the IP (as a string) of the WUSTL address to throttle on
+	# +tag+ (+String+):: a string describing the type of incident to throttle on
+	#
+	def self.write_db( wustl_ip, tag )
+		@@d.debug "Attempting to write new throttle item: #{wustl_ip},#{tag}"
 		begin
-			@@db.execute "INSERT INTO throttle VALUES (?, ?, Date('now', '1 days'));", item
+			@@db.execute "INSERT INTO throttle VALUES (?, ?, Date('now', '1 days'));", wustl_ip, tag
 		rescue Exception => e
-			@@d.debug "\tFailed to insert item: #{item}: #{e}"
+			@@d.debug "\tFailed to insert item: #{wustl_ip},#{tag}: #{e}"
 		end
-		@@d.debug "Success! Wrote item #{item} to throttle database!"
+		@@d.debug "Success! Wrote item #{wustl_ip},#{tag} to throttle database!"
 	end
 
+	# Function to determine whether or not an item should be throttled. If so, then it returns
+	# true and performs no other action. If not, then it returns false and lets the item
+	# go by but then adds it to the current throttle set as well as the database
+	#
+	# ==== Params:
+	# +wustl_ip+ (+String+):: the IP (as a string) of the WUSTL address to throttle on
+	# +tag+ (+String+):: a string describing the type of incident to throttle on
+	#
+	# ==== Returns:
+	# - +true+ or +false+ based on whether or not the given item should be throttled
+	#
 	def self.should_throttle?( wustl_ip, tag )
 		if wustl_ip.nil? || tag.nil?
 			return false
@@ -122,11 +162,9 @@ class Throttler
 			return true
 		else
 			@@throttle_on << item
-			write_db item
+			write_db wustl_ip, tag
 			return false
 		end
 	end
-
-	at_exit { @@db.close unless @@db.nil? }
 
 end

@@ -16,12 +16,24 @@ require 'yaml'
 require_relative './debugger.rb'
 require_relative './throttler.rb'
 
+=begin rdoc
+	ConfigParser class to read in and parse the 'config.yml' file that should be included
+	with the Bookie script. Also performs filepath/existence validation
+=end
 class ConfigParser
 
 
 	@@d = Debugger.new "ConfigParser"
 
 
+	# Spiders the +base_dir+ looking for a 'config.yml' file and parses it if found
+	#
+	# ==== Params:
+	# +base_dir+ (+String+):: the top-level directory for the Bookie script
+	#
+	# ==== Returns:
+	# - A hash of String->String that contains the configuration options hashed by name
+	#
 	def self.get_config( base_dir )
 
 		@@d.debug "Looking for configuration files in base dir: #{base_dir}"

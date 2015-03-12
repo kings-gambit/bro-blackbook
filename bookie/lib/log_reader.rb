@@ -13,9 +13,15 @@
 # stdlib
 require 'zlib'
 
+# 3rd party
+
 # mine
 require_relative './debugger.rb'
 
+=begin
+	Log-reading class that handles reading from a Bro log file and turning
+	each line into a field->value +Hash+
+=end
 class LogReader
 
 
@@ -23,6 +29,14 @@ class LogReader
 	@@d = Debugger.new "LogReader"
 
 
+	# Parse the given file and return an +Array+ of line data
+	#
+	# ==== Params:
+	# +logfile+ (+String+):: The filepath of the log to be read in
+	#
+	# ==== Returns:
+	# - An +Array+ of String->String +Hashes+ representing the data in the log
+	#
 	def self.parse( logfile )
 
 		# read the entire log into memory (faster and
@@ -66,5 +80,4 @@ class LogReader
 		return data
 
 	end
-
 end

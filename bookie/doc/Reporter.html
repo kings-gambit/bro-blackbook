@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Reporter - RDoc Documentation</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/reporter.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link">Object
+  
+</nav>
+
+    
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li ><a href="#method-c-get_wustl_info">::get_wustl_info</a>
+    
+    <li ><a href="#method-c-parse_alert_json">::parse_alert_json</a>
+    
+    <li ><a href="#method-c-report">::report</a>
+    
+    <li ><a href="#method-c-send_email">::send_email</a>
+    
+    <li ><a href="#method-c-setup">::setup</a>
+    
+    <li ><a href="#method-c-usersearch">::usersearch</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./lib/template.html">template</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./ArgParser.html">ArgParser</a>
+  
+    <li><a href="./ConfigParser.html">ConfigParser</a>
+  
+    <li><a href="./Debugger.html">Debugger</a>
+  
+    <li><a href="./LogFinder.html">LogFinder</a>
+  
+    <li><a href="./LogReader.html">LogReader</a>
+  
+    <li><a href="./Reporter.html">Reporter</a>
+  
+    <li><a href="./Throttler.html">Throttler</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Reporter</h1>
+
+  <div id="description" class="description">
+    
+<p><a href="Reporter.html">Reporter</a> class that organizes the parsed data
+from Bro logs into an email form and sends it. Checks with the <a
+href="Throttler.html">Throttler</a> to make sure emails are not spammed.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-get_wustl_info" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">get_wustl_info</span><span
+            class="method-args">( data )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses the data from the Bro log line and returns the IPs/ports organized
+by whether or not they correspond to WUSTL hosts</p>
+
+<h4 id="method-c-get_wustl_info-label-Params%3A">Params:<span><a href="#method-c-get_wustl_info-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>data</code> (+Hash of String-&gt;String+)
+<dd>
+<p>a data hash containing the info from the Bro log line</p>
+</dd></dl>
+
+<h4 id="method-c-get_wustl_info-label-Returns%3A">Returns:<span><a href="#method-c-get_wustl_info-label-Returns%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<ul><li>
+<p>a 2-element array in the form of [ wustl_info, other_info ], where each
+item is the 3-tuple of ts/ip/port</p>
+</li></ul>
+          
+          
+
+          
+          <div class="method-source-code" id="get_wustl_info-source">
+            <pre><span class="ruby-comment"># File lib/reporter.rb, line 135</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">get_wustl_info</span>( <span class="ruby-identifier">data</span> )
+        
+        <span class="ruby-comment"># go ahead and return nil unless all the required data is present</span>
+        <span class="ruby-keyword">unless</span> [<span class="ruby-string">&#39;ts&#39;</span>, <span class="ruby-string">&#39;id.orig_h&#39;</span>, <span class="ruby-string">&#39;id.orig_p&#39;</span>, <span class="ruby-string">&#39;id.resp_h&#39;</span>, <span class="ruby-string">&#39;id.resp_p&#39;</span>].<span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">data</span>.<span class="ruby-identifier">has_key?</span> <span class="ruby-identifier">x</span> }
+                <span class="ruby-keyword">return</span> [<span class="ruby-keyword">nil</span>,<span class="ruby-keyword">nil</span>]
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-comment"># map each field to its respective value in the data hash</span>
+        <span class="ruby-identifier">info1</span> = [ <span class="ruby-string">&#39;ts&#39;</span>, <span class="ruby-string">&#39;id.orig_h&#39;</span>, <span class="ruby-string">&#39;id.orig_p&#39;</span> ].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">data</span>[<span class="ruby-identifier">x</span>] }
+        <span class="ruby-identifier">info2</span> = [ <span class="ruby-string">&#39;ts&#39;</span>, <span class="ruby-string">&#39;id.resp_h&#39;</span>, <span class="ruby-string">&#39;id.resp_p&#39;</span> ].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">data</span>[<span class="ruby-identifier">x</span>] }
+
+        <span class="ruby-comment"># find the ip starting with the WUSTL subnets and return it</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">info1</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">start_with?</span> <span class="ruby-string">&#39;128.252.&#39;</span>, <span class="ruby-string">&#39;65.254.&#39;</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Found wustl info: #{info1}&quot;</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Found other info: #{info2}&quot;</span>
+                <span class="ruby-keyword">return</span> [ <span class="ruby-identifier">info1</span>,<span class="ruby-identifier">info2</span> ]
+        <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">info2</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">start_with?</span> <span class="ruby-string">&#39;128.252.&#39;</span>, <span class="ruby-string">&#39;65.254.&#39;</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Found wustl info: #{info2}&quot;</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Found other info: #{info1}&quot;</span>
+                <span class="ruby-keyword">return</span> [ <span class="ruby-identifier">info2</span>,<span class="ruby-identifier">info1</span> ]
+        <span class="ruby-keyword">else</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Couldn&#39;t find WUSTL info for #{data}&quot;</span>
+                <span class="ruby-keyword">return</span> [<span class="ruby-keyword">nil</span>,<span class="ruby-keyword">nil</span>]
+        <span class="ruby-keyword">end</span>
+
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- get_wustl_info-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- get_wustl_info-method -->
+
+    
+      <div id="method-c-parse_alert_json" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">parse_alert_json</span><span
+            class="method-args">( alert_json )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses the alert_json field to get the alert subject and alert source</p>
+
+<h4 id="method-c-parse_alert_json-label-Params%3A">Params:<span><a href="#method-c-parse_alert_json-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>alert_json</code> (<code>String</code>)
+<dd>
+<p>a <code>String</code> representing a JSON dict with alert_subject and
+alert_source fields</p>
+</dd></dl>
+
+<h4 id="method-c-parse_alert_json-label-Retuns%3A">Retuns:<span><a href="#method-c-parse_alert_json-label-Retuns%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<ul><li>
+<p>a hash of String-&gt;String representing the data contained in the JSON
+string</p>
+</li></ul>
+          
+          
+
+          
+          <div class="method-source-code" id="parse_alert_json-source">
+            <pre><span class="ruby-comment"># File lib/reporter.rb, line 114</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">parse_alert_json</span>( <span class="ruby-identifier">alert_json</span> )
+
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Parsing alert json: #{alert_json}&quot;</span>
+
+        <span class="ruby-keyword">begin</span>
+                <span class="ruby-keyword">return</span> <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span> <span class="ruby-identifier">alert_json</span>
+        <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">err</span> <span class="ruby-node">&quot;Failed to parse alert json: #{alert_json}&quot;</span>
+        <span class="ruby-keyword">end</span>
+
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- parse_alert_json-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- parse_alert_json-method -->
+
+    
+      <div id="method-c-report" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">report</span><span
+            class="method-args">( data )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Takes in a <code>Hash</code> containing the line data and cals send_email
+if it passes the <a href="Throttler.html">Throttler</a> check</p>
+
+<h4 id="method-c-report-label-Params%3A">Params:<span><a href="#method-c-report-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>data</code> (+Hash of String-&gt;String+)
+<dd>
+<p>a data hash containing the info from the Bro log line</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="report-source">
+            <pre><span class="ruby-comment"># File lib/reporter.rb, line 184</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">report</span>( <span class="ruby-identifier">data</span> )
+        <span class="ruby-identifier">wustl_info</span>, <span class="ruby-identifier">other_info</span> = <span class="ruby-identifier">get_wustl_info</span> <span class="ruby-identifier">data</span>
+
+        <span class="ruby-comment"># if the wustl info was successfully retrieved, try a usersearch. otherwise, </span>
+        <span class="ruby-comment">#   set the user to unknown</span>
+        <span class="ruby-identifier">data</span>[<span class="ruby-string">&#39;user&#39;</span>] = 
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">wustl_info</span>.<span class="ruby-identifier">nil?</span>
+                <span class="ruby-string">&quot;UNKNOWN&quot;</span>
+        <span class="ruby-keyword">else</span>
+                <span class="ruby-identifier">usersearch</span>( <span class="ruby-operator">*</span><span class="ruby-identifier">wustl_info</span> )
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-comment"># pull out the WUSTL ip and throttle tag to see whether or not</span>
+        <span class="ruby-comment">#   this alert should be throttled</span>
+        <span class="ruby-identifier">wustl_ip</span> = <span class="ruby-identifier">wustl_info</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">wustl_info</span>[<span class="ruby-value">1</span>]
+        <span class="ruby-identifier">throttle_tag</span> = <span class="ruby-identifier">data</span>[<span class="ruby-string">&#39;source_file&#39;</span>].<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;/&#39;</span>).<span class="ruby-identifier">last</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;.&#39;</span>).<span class="ruby-identifier">first</span>
+
+        <span class="ruby-keyword">unless</span> <span class="ruby-constant">Throttler</span>.<span class="ruby-identifier">should_throttle?</span> <span class="ruby-identifier">wustl_ip</span>, <span class="ruby-identifier">throttle_tag</span>
+                <span class="ruby-identifier">send_email</span>( <span class="ruby-identifier">data</span> )
+        <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- report-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- report-method -->
+
+    
+      <div id="method-c-send_email" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">send_email</span><span
+            class="method-args">( data )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Prints the given data to a temporary file and sends it via MAILX</p>
+
+<h4 id="method-c-send_email-label-Params%3A">Params:<span><a href="#method-c-send_email-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>data</code> (+Hash of String-&gt;String+)
+<dd>
+<p>a data hash containing the info from the Bro log line</p>
+</dd></dl>
+
+<h4 id="method-c-send_email-label-Note%3A">Note:<span><a href="#method-c-send_email-label-Note%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<ul><li>
+<p>The given <code>data</code> hash must contain a properly-formatted
+<code>alert_json</code> field</p>
+</li></ul>
+          
+          
+
+          
+          <div class="method-source-code" id="send_email-source">
+            <pre><span class="ruby-comment"># File lib/reporter.rb, line 53</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">send_email</span>( <span class="ruby-identifier">data</span> )
+
+        <span class="ruby-comment"># parse the alert info out of the json string</span>
+        <span class="ruby-identifier">alert_info</span> = 
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">data</span>.<span class="ruby-identifier">has_key?</span> <span class="ruby-string">&#39;alert_json&#39;</span>
+                <span class="ruby-identifier">parse_alert_json</span> <span class="ruby-identifier">data</span>[<span class="ruby-string">&#39;alert_json&#39;</span>]
+        <span class="ruby-keyword">else</span>
+                <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">err</span> <span class="ruby-node">&quot;Line data was missing the field &#39;alert_json&#39;: #{data}&quot;</span>
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Prepping email with subject: #{alert_info[&#39;alert_subject&#39;]}&quot;</span>
+
+        <span class="ruby-comment"># generate a random string for the email name</span>
+        <span class="ruby-identifier">email_file</span> = <span class="ruby-node">&quot;/tmp/#{SecureRandom.hex}&quot;</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;\tCreated email file @ #{email_file}&quot;</span>
+
+        <span class="ruby-comment"># open the file and write the contents of `data`</span>
+        <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>( <span class="ruby-identifier">email_file</span>, <span class="ruby-string">&#39;w&#39;</span> ) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+                <span class="ruby-comment"># add meta information to the top of the email</span>
+                <span class="ruby-identifier">e</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Subject = #{alert_info[&#39;alert_subject&#39;]}&quot;</span>
+                <span class="ruby-identifier">e</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Data source = #{alert_info[&#39;alert_source&#39;]}&quot;</span>
+                <span class="ruby-identifier">e</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Source file = #{data.delete &#39;source_file&#39;}&quot;</span>
+                <span class="ruby-identifier">e</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;User = #{data.delete &#39;user&#39;}&quot;</span>
+                <span class="ruby-identifier">e</span>.<span class="ruby-identifier">puts</span> <span class="ruby-string">&quot;\n\n&quot;</span>
+
+                <span class="ruby-comment"># add the remainder of the alert</span>
+                <span class="ruby-identifier">data</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">field</span>,<span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+                        <span class="ruby-identifier">e</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;#{field} = #{value}&quot;</span>
+                <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-comment"># send the email</span>
+
+        <span class="ruby-comment"># join the recipients into a single string</span>
+        <span class="ruby-identifier">rcpt_string</span> = <span class="ruby-identifier">@@mailing_list</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;,&#39;</span>)
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;\tSending to recipients: #{rcpt_string}&quot;</span>
+
+        <span class="ruby-comment"># replace single quotes in subject/recipients that would mess with shell</span>
+        <span class="ruby-identifier">alert_info</span>[<span class="ruby-string">&#39;alert_subject&#39;</span>].<span class="ruby-identifier">gsub!</span> <span class="ruby-string">&quot;&#39;&quot;</span>, <span class="ruby-string">&quot;\\&#39;&quot;</span>
+        <span class="ruby-identifier">rcpt_string</span>.<span class="ruby-identifier">gsub!</span> <span class="ruby-string">&quot;&#39;&quot;</span>, <span class="ruby-string">&quot;\\&#39;&quot;</span>
+
+        <span class="ruby-comment"># create and run the system mailx command</span>
+        <span class="ruby-identifier">cmd</span> = <span class="ruby-node">&quot;cat #{email_file} | mailx -s &#39;#{alert_info[&#39;alert_subject&#39;]}&#39; &#39;#{rcpt_string}&#39;&quot;</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;\tRunning command: #{cmd}&quot;</span>
+        <span class="ruby-identifier">system</span> <span class="ruby-identifier">cmd</span>
+
+        <span class="ruby-comment"># delete it!</span>
+        <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm</span> <span class="ruby-identifier">email_file</span>
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;\tDeleted email: #{email_file}&quot;</span>
+
+        <span class="ruby-identifier">exit</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- send_email-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- send_email-method -->
+
+    
+      <div id="method-c-setup" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">setup</span><span
+            class="method-args">( mailing_list )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Assign the given mailing list to the reporter class to use as TO addresses</p>
+
+<h4 id="method-c-setup-label-Params%3A">Params:<span><a href="#method-c-setup-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>mailing_list</code> (+Array of String+)
+<dd>
+<p>An <code>Array</code> containing the email addresses to be used</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="setup-source">
+            <pre><span class="ruby-comment"># File lib/reporter.rb, line 41</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">setup</span>( <span class="ruby-identifier">mailing_list</span> )
+        <span class="ruby-identifier">@@mailing_list</span> = <span class="ruby-identifier">mailing_list</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- setup-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- setup-method -->
+
+    
+      <div id="method-c-usersearch" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">usersearch</span><span
+            class="method-args">( ts, wustl_ip, wustl_port )</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Takes in WUSTL info and calls an external script to perform a user lookup</p>
+
+<h4 id="method-c-usersearch-label-Params%3A">Params:<span><a href="#method-c-usersearch-label-Params%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<dl class="rdoc-list note-list"><dt><code>ts</code> (<code>String</code>)
+<dd>
+<p>a UNIX-timestamp formatted string representing the time of connection</p>
+</dd><dt><code>wustl_ip</code> (<code>String</code>)
+<dd>
+<p>the <strong>external</strong> WUSTL IP</p>
+</dd><dt><code>wustl_port</code> (<code>String</code>)
+<dd>
+<p>the <strong>external</strong> WUSTL port</p>
+</dd></dl>
+
+<h4 id="method-c-usersearch-label-Returns%3A">Returns:<span><a href="#method-c-usersearch-label-Returns%3A">&para;</a> <a href="#documentation">&uarr;</a></span></h4>
+<ul><li>
+<p>a <code>String</code> containing the user information</p>
+</li></ul>
+          
+          
+
+          
+          <div class="method-source-code" id="usersearch-source">
+            <pre><span class="ruby-comment"># File lib/reporter.rb, line 172</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">usersearch</span>( <span class="ruby-identifier">ts</span>, <span class="ruby-identifier">wustl_ip</span>, <span class="ruby-identifier">wustl_port</span> )
+
+        <span class="ruby-identifier">@@d</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Attempting usersearch with info: #{ts} #{wustl_ip} #{wustl_port}&quot;</span>
+        <span class="ruby-keyword">return</span> <span class="ruby-string">&quot;?&quot;</span> <span class="ruby-comment">#FIXME</span>
+
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- usersearch-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- usersearch-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 4.0.0.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+
