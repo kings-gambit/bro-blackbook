@@ -98,7 +98,7 @@ def check( files )
 					##
 					this_num_fields = line.split("\t").size
 					if this_num_fields != num_fields
-						_fail  "expected #{num_fields} fields, found #{this_num_fields}"
+						_fail  "expected #{num_fields} fields #{header}, found #{this_num_fields}"
 					end
 
 					## make sure the line has a parseable date_to_remove field
