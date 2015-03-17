@@ -54,7 +54,7 @@ function stream_blacklist()
 
 	# add_table call to repopulate the table
 	Input::add_table([
-		$source="/Users/nsiow/Dropbox/code/bro/blackbook/BLACKLISTS/ip_blacklist.brodata",
+		$source=Blackbook::BLACKBOOK_BASEDIR+"/BLACKLISTS/ip_blacklist.brodata",
 		$name="ipblacklist",
 		$idx=Idx,
 		$val=Val,
@@ -95,6 +95,9 @@ event bro_init()
 
 event Conn::log_conn( r:Conn::Info )
 {
+	print IP_BLACKLIST;
+	return;
+
 	local alert_subject: string = "";
 	local alert_source: string = "";
 

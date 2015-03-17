@@ -1,5 +1,0 @@
-#separator \x09
-#fields	ip	source	date_to_remove
-184.72.255.211	spidey_senses	2015-03-03
-172.27.45.67	false_alarm	2015-03-02
-128.252.25.10	whatever 	never

@@ -156,6 +156,7 @@ def clean( files )
 					##
 					if dtr == 'never'
 						lines2keep << line
+
 					## otherwise, check whether or not its date has passed
 					##
 					else

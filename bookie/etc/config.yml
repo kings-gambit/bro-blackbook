@@ -6,4 +6,4 @@ mailing_list:
 
 max_alerts: 50
 
-throttle_db: "/Users/nsiow/Dropbox/code/bro/blackbook/bookie/etc/throttle.sqlite"
+throttle_db: "/Users/nsiow/box/code/work_projects/blackbook/bookie/dat/throttle.sqlite"

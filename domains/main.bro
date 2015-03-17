@@ -54,7 +54,7 @@ function stream_blacklist()
 
 	# add_table call to repopulate the table
 	Input::add_table([
-		$source="/Users/nsiow/Dropbox/code/bro/blackbook/BLACKLISTS/domain_blacklist.brodata",
+		$source=Blackbook::BLACKBOOK_BASEDIR+"/BLACKLISTS/domain_blacklist.brodata",
 		$name="domainblacklist",
 		$idx=Idx,
 		$val=Val,
