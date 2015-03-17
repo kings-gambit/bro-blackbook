@@ -60,7 +60,8 @@ type Val: record
 function stream_ipblacklist()
 {
 	# reset the existing table
-	IP_BLACKLIST = table();
+	# FIXME change this to the name of the global blacklist
+	#IP_BLACKLIST = table();
 
 	# add_table call to repopulate the table
 	Input::add_table([
