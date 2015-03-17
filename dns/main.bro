@@ -3,13 +3,13 @@
 #		Nicholas Siow | compilewithstyle@gmail.com
 #	
 #	Description:
-#		Reads from a list of blacklisted IPs and writes to `blackbook_ip.log`
-#		if any seen IPs match these blacklists
+#		Reads from a list of blacklisted domains and writes to `blackbook_dns.log`
+#		if any seen domains match these blacklists
 #--------------------------------------------------------------------------------
 
-@load base/protocols/conn
+@load base/protocols/dns
 
-module BlackbookIp;
+module BlackbookDns;
 
 #--------------------------------------------------------------------------------
 #	Set up variables for the new logging stream
@@ -19,11 +19,11 @@ export
 {
 	redef enum Log::ID += { LOG };
 
-	redef record Conn::Info += {
+	redef record DNS::Info += {
 		alert_json: string &log &optional;
 	};
 
-	global log_blackbook_ip: event ( rec:Conn::Info );
+	global log_blackbook_dns: event ( rec:DNS::Info );
 }
 
 #--------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ export
 
 type Idx: record
 {
-	ip: addr;
+	domain: string;
 };
 
 type Val: record
@@ -41,7 +41,7 @@ type Val: record
 };
 
 # global blacklist variable that will be synchronized across nodes
-global IP_BLACKLIST: table[addr] of Val &synchronized;
+global DNS_BLACKLIST: table[string] of Val &synchronized;
 
 #--------------------------------------------------------------------------------
 #	Define a function to reconnect to the database and update the blacklist
@@ -50,15 +50,15 @@ global IP_BLACKLIST: table[addr] of Val &synchronized;
 function stream_blacklist()
 {
 	# reset the existing table
-	IP_BLACKLIST = table();
+	DNS_BLACKLIST = table();
 
 	# add_table call to repopulate the table
 	Input::add_table([
-		$source=Blackbook::BLACKBOOK_BASEDIR+"/BLACKLISTS/ip_blacklist.brodata",
-		$name="ipblacklist",
+		$source=Blackbook::BLACKBOOK_BASEDIR+"/BLACKLISTS/domain_blacklist.brodata",
+		$name="dnsblacklist",
 		$idx=Idx,
 		$val=Val,
-		$destination=IP_BLACKLIST,
+		$destination=DNS_BLACKLIST,
 		$mode=Input::REREAD
 		]);
 }
@@ -70,11 +70,11 @@ function stream_blacklist()
 
 event Input::end_of_data( name:string, source:string )
 {
-	if( name != "ipblacklist" )
+	if( name != "dnsblacklist" )
 		return;
 
-	print "IP_BLACKLIST.BRO -----------------------------------------------------";
-	print IP_BLACKLIST;
+	print "DNS_BLACKLIST.BRO -----------------------------------------------------";
+	print DNS_BLACKLIST;
 	print "----------------------------------------------------------------------";
 }
 
@@ -85,7 +85,7 @@ event Input::end_of_data( name:string, source:string )
 event bro_init()
 {
 	stream_blacklist();
-	Log::create_stream(BlackbookIp::LOG, [$columns=Conn::Info, $ev=log_blackbook_ip]);
+	Log::create_stream(BlackbookDns::LOG, [$columns=DNS::Info, $ev=log_blackbook_dns]);
 }
 
 #--------------------------------------------------------------------------------
@@ -93,28 +93,15 @@ event bro_init()
 #	log if the entry meets the desired criteria
 #--------------------------------------------------------------------------------
 
-event Conn::log_conn( r:Conn::Info )
+event DNS::log_dns( r:DNS::Info )
 {
-	local alert_subject: string = "";
-	local alert_source: string = "";
+	local query: string = r$query;
 
-	local orig: addr = r$id$orig_h;
-	local resp: addr = r$id$resp_h;
-
-	if( orig in IP_BLACKLIST )
+	if( r$qtype == 1 && query in DNS_BLACKLIST )
 	{
-		alert_subject = fmt("Connection to blacklisted IP: %s", orig);
-		alert_source = IP_BLACKLIST[orig]$source;
-	}
-	else if( resp in IP_BLACKLIST )
-	{
-		alert_subject = fmt("Connection to blacklisted IP: %s", resp);
-		alert_source = IP_BLACKLIST[resp]$source;
-	}
-
-	if( alert_subject != "" )
-	{
-		r$alert_json = fmt( "{ \"alert_subject\": \"%s\", \"alert_source\": \"%s\" }", alert_subject, alert_source );
-		Log::write( BlackbookIp::LOG, r );
+		local alert_subject: string = fmt("DNS query for blacklisted domain: %s", query);
+		local alert_source: string = DNS_BLACKLIST[query]$source;
+        r$alert_json = fmt( "{ \"alert_subject\": \"%s\", \"alert_source\": \"%s\" }", alert_subject, alert_source );
+		Log::write( BlackbookDns::LOG, r );
 	}
 }

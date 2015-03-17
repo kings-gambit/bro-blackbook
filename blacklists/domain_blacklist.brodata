@@ -1,4 +1,4 @@
 #separator \x09
-#fields	url	source	date_to_remove
+#fields	domain	source	date_to_remove
 reddit.com/r/programming	-	never
 sinaimg.cn	-	never

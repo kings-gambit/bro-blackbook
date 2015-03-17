@@ -57,7 +57,7 @@ type Val: record
 #	Define a function to reconnect to the database and update the blacklist
 #--------------------------------------------------------------------------------
 
-function stream_ipblacklist()
+function stream_blacklist()
 {
 	# reset the existing table
 	# FIXME change this to the name of the global blacklist

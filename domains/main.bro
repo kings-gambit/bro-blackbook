@@ -32,7 +32,7 @@ export
 
 type Idx: record
 {
-	url: string;
+	domain: string;
 };
 
 type Val: record

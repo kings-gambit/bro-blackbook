@@ -56,7 +56,7 @@ def main
 
 	# set up the Reporter class with the throttle database filepath
 	#   given in the configuration
-	Reporter.setup config['mailing_list']
+	Reporter.setup config['mailing_list'], args.test
 
 	# iterate through the logs and have LogReader parse each of them.
 	#   send the results to the Reporter class

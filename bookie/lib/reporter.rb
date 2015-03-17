@@ -38,8 +38,9 @@ class Reporter
 	# ==== Params:
 	# +mailing_list+ (+Array of String+):: An +Array+ containing the email addresses to be used
 	#
-	def self.setup( mailing_list )
+	def self.setup( mailing_list, test )
 		@@mailing_list = mailing_list
+		@@test = test
 	end
 
 	# Prints the given data to a temporary file and sends it via MAILX
@@ -82,19 +83,20 @@ class Reporter
 		end
 
 		# send the email
+		unless @@test
+			# join the recipients into a single string
+			rcpt_string = @@mailing_list.join(',')
+			@@d.debug "\tSending to recipients: #{rcpt_string}"
 
-		# join the recipients into a single string
-		rcpt_string = @@mailing_list.join(',')
-		@@d.debug "\tSending to recipients: #{rcpt_string}"
+			# replace single quotes in subject/recipients that would mess with shell
+			alert_info['alert_subject'].gsub! "'", "\\'"
+			rcpt_string.gsub! "'", "\\'"
 
-		# replace single quotes in subject/recipients that would mess with shell
-		alert_info['alert_subject'].gsub! "'", "\\'"
-		rcpt_string.gsub! "'", "\\'"
-
-		# create and run the system mailx command
-		cmd = "cat #{email_file} | mailx -s '#{alert_info['alert_subject']}' '#{rcpt_string}'"
-		@@d.debug "\tRunning command: #{cmd}"
-		system cmd
+			# create and run the system mailx command
+			cmd = "cat #{email_file} | mailx -s '#{alert_info['alert_subject']}' '#{rcpt_string}'"
+			@@d.debug "\tRunning command: #{cmd}"
+			system cmd
+		end
 
 		# delete it!
 		FileUtils.rm email_file
