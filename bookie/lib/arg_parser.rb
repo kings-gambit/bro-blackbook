@@ -46,16 +46,16 @@ class ArgParser
     	        options.files = files
     	    end
 
+    	    opts.on( '-r', '--use-recent', 'Use the most recent set of logs' ) do |use_recent|
+    	        options.use_recent = use_recent
+    	    end
+
     	    opts.on( '-t', '--test', 'Run for testing purposes -- no emails will be sent' ) do |test|
     	        options.test = test
     	    end
 
     	    opts.on( '-d', '--debug', 'Turn on program debugging' ) do |debug|
     	        options.debug = debug
-    	    end
-
-    	    opts.on( '-r', '--use-recent', 'Use the most recent set of logs' ) do |use_recent|
-    	        options.use_recent = use_recent
     	    end
 
 			opts.on( '-c', '--color', 'Use color in debugging statements' ) do |color|
