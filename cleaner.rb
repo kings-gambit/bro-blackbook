@@ -66,6 +66,13 @@ def check( files )
 				line.chomp!
 				$curr_line = line
 
+				## make sure the data doesn't have leading http://
+				## or www.
+				datum = line.split("\t")
+				if datum.start_with?( 'http://' ) || datum.start_with?( 'www.' )
+					_fail "data item starts with leading http:// or www., please remove"
+				end
+
 				## make sure the header is correct
 				##
 				if $curr_line_num == 1
