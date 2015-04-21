@@ -55,7 +55,7 @@ function stream_blacklist()
 
 	# add_table call to repopulate the table
 	Input::add_table([
-		$source=Blackbook::BLACKBOOK_BASEDIR+"/BLACKLISTS/filehash_blacklist.brodata",
+		$source=Blackbook::BLACKBOOK_BASEDIR+"/blacklists/filehash_blacklist.brodata",
 		$name="filehashblacklist",
 		$idx=Idx,
 		$val=Val,

@@ -68,6 +68,7 @@ def check( files )
 
 				## make sure the data doesn't have leading http://
 				## or www.
+				##
 				datum = line.split("\t")
 				if datum.start_with?( 'http://' ) || datum.start_with?( 'www.' )
 					_fail "data item starts with leading http:// or www., please remove"

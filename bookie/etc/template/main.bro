@@ -66,7 +66,7 @@ function stream_blacklist()
 	# add_table call to repopulate the table
 	Input::add_table([
 		# FIXME change the source the correct filepath
-		#$source=Blackbook::BLACKBOOK_BASEDIR+"/Users/nsiow/Dropbox/code/bro/blackbook/BLACKLISTS/ip_blacklist.brodata",
+		#$source=Blackbook::BLACKBOOK_BASEDIR+"/Users/nsiow/Dropbox/code/bro/blackbook/blacklists/ip_blacklist.brodata",
 		# FIXME give an arbitrary name to the input stream -- only used for output printing
 		#$name="ipblacklist",
 		$idx=Idx,
