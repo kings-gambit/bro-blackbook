@@ -97,7 +97,7 @@ event DNS::log_dns( r:DNS::Info )
 {
 	if( r?$query )
 	{
-		local query1: string = sub( r$query, /^www\./, "" );
+		local query: string = sub( r$query, /^www\./, "" );
 
 		if( r$qtype == 1 && query in DNS_BLACKLIST )
 		{
