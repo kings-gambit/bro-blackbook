@@ -70,12 +70,17 @@ function stream_blacklist()
 
 event Input::end_of_data( name:string, source:string )
 {
+	print name;
+	flush_all();
+
 	if( name != "domainblacklist" )
 		return;
 
 	print "DOMAIN_BLACKLIST.BRO -----------------------------------------------------";
 	print DOMAIN_BLACKLIST;
 	print "----------------------------------------------------------------------";
+
+	flush_all();
 }
 
 #--------------------------------------------------------------------------------
