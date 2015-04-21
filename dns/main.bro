@@ -95,13 +95,16 @@ event bro_init()
 
 event DNS::log_dns( r:DNS::Info )
 {
-	local query: string = r$query;
-
-	if( r$qtype == 1 && query in DNS_BLACKLIST )
+	if( r?$query )
 	{
-		local alert_subject: string = fmt("DNS query for blacklisted domain: %s", query);
-		local alert_source: string = DNS_BLACKLIST[query]$source;
-        r$alert_json = fmt( "{ \"alert_subject\": \"%s\", \"alert_source\": \"%s\" }", alert_subject, alert_source );
-		Log::write( BlackbookDns::LOG, r );
+		local query1: string = sub( r$query, /^www\./, "" );
+
+		if( r$qtype == 1 && query in DNS_BLACKLIST )
+		{
+			local alert_subject: string = fmt("DNS query for blacklisted domain: %s", query);
+			local alert_source: string = DNS_BLACKLIST[query]$source;
+	        r$alert_json = fmt( "{ \"alert_subject\": \"%s\", \"alert_source\": \"%s\" }", alert_subject, alert_source );
+			Log::write( BlackbookDns::LOG, r );
+		}
 	}
 }
