@@ -112,7 +112,7 @@ event Files::log_files( r:Files::Info )
         }
     }
 
-    else if( r?$sha1 )
+    if( r?$sha1 )
     {
         hash = r$sha1;
         if( hash in FILEHASH_BLACKLIST )
@@ -122,7 +122,7 @@ event Files::log_files( r:Files::Info )
         }
     }
 
-    else if( r?$sha256 )
+    if( r?$sha256 )
     {
         hash = r$sha256;
         if( hash in FILEHASH_BLACKLIST )

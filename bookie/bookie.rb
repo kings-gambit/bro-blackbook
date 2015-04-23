@@ -58,6 +58,9 @@ def main
 	#   given in the configuration
 	Reporter.setup config['mailing_list'], args.test
 
+	# set up the LogReader class to be able to read in files
+	LogReader.setup
+
 	# iterate through the logs and have LogReader parse each of them.
 	#   send the results to the Reporter class
 	logs.each do |log|

@@ -50,13 +50,22 @@ class LogFinder
 		bb_logs = Dir.glob globstr
 		@@d.debug "Found blackbook logs: #{bb_logs}"
 
-		# throw an error if there aren't any logs left
-		if bb_logs.empty?
-			@@d.err "Couldn't find any blackbook logs in directory: #{bro_log_dir}"
-		end
+		# find all intel logs with the given timestamp
+		globstr = "#{most_recent}/intel*#{max_ts}*-*"
+		intel_logs = Dir.glob globstr
+		@@d.debug "Found intel logs: #{intel_logs}"
+
+		# find all notice logs with the given timestamp
+		globstr = "#{most_recent}/notice*#{max_ts}*-*"
+		notice_logs = Dir.glob globstr
+		@@d.debug "Found notice logs: #{notice_logs}"
+
+		# concatenate the list of logs
+		log_list = bb_logs + intel_logs + notice_logs
+		@@d.debug "Found overall log list: #{log_list}"
 
 		# return the list of logs to process
-		return bb_logs
+		return log_list
 
 	end
 
@@ -67,10 +76,8 @@ class LogFinder
 				@@d.err "Specified log does not exist: #{l}"
 			end
 			
-			# make sure the given log matches the pattern for blackbook logs
-			unless l =~ /\/?blackbook.*\.log(?:.gz)?/
-				@@d.err "Specified log does not look like a blackbook log: #{l}"
-			end
+			# TODO -- use regex to verify that the log filename
+			# looks more or less correct
 		end
 
 		return logs

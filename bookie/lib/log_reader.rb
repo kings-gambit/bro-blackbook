@@ -12,6 +12,7 @@
 
 # stdlib
 require 'zlib'
+require 'mkmf'
 
 # 3rd party
 
@@ -24,10 +25,41 @@ require_relative './debugger.rb'
 =end
 class LogReader
 
+	@@zcat = nil
 
 	# create a new debugging object
 	@@d = Debugger.new "LogReader"
 
+	# Preps the LogReader by looking in the system $PATH variable for a program to
+	# read gzip files
+	#
+	# === Params:
+	# => none
+	# === Returns:
+	# => none
+	#
+	def self.setup
+
+		options = %w|
+			gzcat
+			zcat
+		|
+
+		while @@zcat.nil?
+
+			zcat_try = find_executable options.shift
+
+			if !zcat_try.nil?
+				@@zcat = zcat_try
+			end
+
+			if options.empty?
+				@@d.err "Could not find program to read .gz files"
+			end
+
+		end
+
+	end
 
 	# Parse the given file and return an +Array+ of line data
 	#
@@ -42,11 +74,11 @@ class LogReader
 		# read the entire log into memory (faster and
 		#   easier to play with, but a little unsafe?)
 		lines = 
-		if logfile.end_with? '.log.gz'
-			Zlib::GzipReader.new( File.open(logfile, 'r') )
+		if logfile.include? 'notice'
+			`#{@@zcat} -f #{logfile} | grep TeamCymru`
 		else
-			File.open( logfile, 'r' )
-		end.each_line.to_a.map &:chomp
+			`#{@@zcat} -f #{logfile}`
+		end.split("\n")
 
 		@@d.debug "Read #{lines.size} lines from file #{logfile}"
 

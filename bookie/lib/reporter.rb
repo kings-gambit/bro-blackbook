@@ -55,10 +55,18 @@ class Reporter
 
 		# parse the alert info out of the json string
 		alert_info = 
-		if data.has_key? 'alert_json'
-			parse_alert_json data['alert_json']
+		if data['source_file'].include? 'blackbook'
+			if data.has_key? 'alert_json'
+				parse_alert_json data['alert_json']
+			else
+				@@d.err "Line data was missing the field 'alert_json': #{data}"
+			end
+		elsif data['source_file'].include? 'notice'
+			{ 'alert_subject' => 'TeamCymru Malware Registry hit', 'alert_source' => 'TeamCymru' }
+		elsif data['source_file'].include? 'intel'
+			{ 'alert_subject' => 'Bro Intel match', 'alert_source' => data['sources'] }
 		else
-			@@d.err "Line data was missing the field 'alert_json': #{data}"
+			@@d.err "Not sure how to get alert info for log: #{data['source_file']}"
 		end
 
 		@@d.debug "Prepping email with subject: #{alert_info['alert_subject']}"
