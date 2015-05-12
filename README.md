@@ -25,17 +25,17 @@ for your installation
 Adding items is done by changing those files in the `./blacklists` directory. The file should remain
 in the standard Bro input/log format, and should conform to the following specifications:
 
-1. The first line should be the separator to be used, so likely "#separator \x09".
-2. The second line should be the list of fields.
-  1. This line should start with '#fields'.
+1. The first line should be the separator to be used, so likely "#separator \x09"
+2. The second line should be the list of fields
+  1. This line should start with '#fields'
   2. There should be 3 fields overall. You can choose the name of the first, but the second should
      be 'source' and the third should be 'date_to_remove'
-3. Each line in the file should then have 3 fields following the above order.
-4. Any data you enter should have leading 'www's and 'http's stripped.
-5. No field should equal "-", as Bro will interpret that as null.
-6. Each line should separate fields with the specified separator, probably TAB.
-7. There should not be any empty lines.
-8. The date_to_remove column should contain a date in the format YYYY-MM-DD.
+3. Each line in the file should then have 3 fields following the above order
+4. Any data you enter should have leading 'www's and 'http's stripped
+5. No field should equal "-", as Bro will interpret that as null
+6. Each line should separate fields with the specified separator, probably TAB
+7. There should not be any empty lines
+8. The date_to_remove column should contain a date in the format YYYY-MM-DD
 
 These are a lot of rules, but they are necessary for Bro to read the file properly.
 
