@@ -1,3 +1,0 @@
-#separator \x09
-#fields	ip	source	date_to_remove
-128.252.25.10	whatever 	never
