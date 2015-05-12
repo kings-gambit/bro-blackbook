@@ -3,3 +3,4 @@
 *.log
 *.swp
 ./blacklists
+./blacklists/*
