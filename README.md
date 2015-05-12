@@ -20,7 +20,7 @@ Then add the following line to your `local.bro` file:
 You then need to change the filepath in `config.bro` to match the base blackbook directory
 for your installation.
 
-#TODO - add instructions for changing filepaths in `bookie.py` and `cleaner.py`.
+TODO - add instructions for changing filepaths in `bookie.py` and `cleaner.py`.
 
 ### Adding items
 
