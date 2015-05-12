@@ -1,4 +1,3 @@
 #separator \x09
 #fields	ip	source	date_to_remove
 128.252.25.10	whatever 	never
-128.252.10.10	ren-isac	2015-04-01
