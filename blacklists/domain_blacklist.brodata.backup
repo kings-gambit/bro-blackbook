@@ -1,0 +1,4 @@
+#separator \x09
+#fields	domain	source	date_to_remove
+test	test	never
+this	that	2015-03-15

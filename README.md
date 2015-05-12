@@ -15,10 +15,12 @@ Add this directory to your local bro install:
 
 Then add the following line to your `local.bro` file:
 
-	@load blackbook
+	@load bro-blackbook
 
 You then need to change the filepath in `config.bro` to match the base blackbook directory
-for your installation
+for your installation.
+
+#TODO - add instructions for changing filepaths in `bookie.py` and `cleaner.py`.
 
 ### Adding items
 
@@ -48,3 +50,11 @@ are misformatted.
 Any of the blacklists can be updated in real time and the changes will be reflected in the Bro
 instance. However, I recommend making changes to the file in atomic chunks (i.e., adding full
 lines and entries at a time and never writing an incomplete state to the file).
+
+### Alerting
+
+Coming soon
+
+### Extending the scripts
+
+Coming soon
