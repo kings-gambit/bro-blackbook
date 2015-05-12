@@ -21,7 +21,7 @@ export
 	redef enum Log::ID += { LOG };
 
 	redef record Files::Info += {
-		alert_json: string &log &optional;
+		intel_source: string &log &optional;
 	};
 
 	global log_blackbook_filehash: event ( rec:Files::Info );
@@ -99,16 +99,14 @@ event bro_init()
 event Files::log_files( r:Files::Info )
 {
     local hash: string;
-	local alert_subject: string = "";
-	local alert_source: string = "";
+	local intel_source: string = "";
 
     if( r?$md5 )
     {
         hash = r$md5;
         if( hash in FILEHASH_BLACKLIST )
         {
-			alert_subject = fmt("Malicious file downloaded: %s", hash);
-			alert_source = FILEHASH_BLACKLIST[hash]$source;
+			intel_source = FILEHASH_BLACKLIST[hash]$source;
         }
     }
 
@@ -117,8 +115,7 @@ event Files::log_files( r:Files::Info )
         hash = r$sha1;
         if( hash in FILEHASH_BLACKLIST )
         {
-			alert_subject = fmt("Malicious file downloaded: %s", hash);
-			alert_source = FILEHASH_BLACKLIST[hash]$source;
+			intel_source = FILEHASH_BLACKLIST[hash]$source;
         }
     }
 
@@ -127,16 +124,15 @@ event Files::log_files( r:Files::Info )
         hash = r$sha256;
         if( hash in FILEHASH_BLACKLIST )
         {
-			alert_subject = fmt("Malicious file downloaded: %s", hash);
-			alert_source = FILEHASH_BLACKLIST[hash]$source;
+			intel_source = FILEHASH_BLACKLIST[hash]$source;
         }
     }
 
 	# if a malicious file was found and the alert subject was changed,
 	# then log this file
-	if( alert_subject != "" ) 
+	if( intel_source != "" ) 
 	{
-		r$alert_json = fmt( "{ \"alert_subject\": \"%s\", \"alert_source\": \"%s\" }", alert_subject, alert_source );
+		r$intel_source = intel_source;
 		Log::write( BlackbookFilehash::LOG, r );
 	}
 }

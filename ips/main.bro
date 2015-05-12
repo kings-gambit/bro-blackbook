@@ -20,7 +20,7 @@ export
 	redef enum Log::ID += { LOG };
 
 	redef record Conn::Info += {
-		alert_json: string &log &optional;
+		intel_source: string &log &optional;
 	};
 
 	global log_blackbook_ip: event ( rec:Conn::Info );
@@ -97,26 +97,23 @@ event bro_init()
 
 event Conn::log_conn( r:Conn::Info )
 {
-	local alert_subject: string = "";
-	local alert_source: string = "";
+	local intel_source: string = "";
 
 	local orig: addr = r$id$orig_h;
 	local resp: addr = r$id$resp_h;
 
 	if( orig in IP_BLACKLIST )
 	{
-		alert_subject = fmt("Connection to blacklisted IP: %s", orig);
-		alert_source = IP_BLACKLIST[orig]$source;
+		intel_source = IP_BLACKLIST[orig]$source;
 	}
 	else if( resp in IP_BLACKLIST )
 	{
-		alert_subject = fmt("Connection to blacklisted IP: %s", resp);
-		alert_source = IP_BLACKLIST[resp]$source;
+		intel_source = IP_BLACKLIST[resp]$source;
 	}
 
-	if( alert_subject != "" )
+	if( intel_source != "" )
 	{
-		r$alert_json = fmt( "{ \"alert_subject\": \"%s\", \"alert_source\": \"%s\" }", alert_subject, alert_source );
+		r$intel_source = intel_source;
 		Log::write( BlackbookIp::LOG, r );
 	}
 }

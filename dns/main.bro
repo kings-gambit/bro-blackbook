@@ -20,7 +20,7 @@ export
 	redef enum Log::ID += { LOG };
 
 	redef record DNS::Info += {
-		alert_json: string &log &optional;
+		intel_source: string &log &optional;
 	};
 
 	global log_blackbook_dns: event ( rec:DNS::Info );
@@ -103,9 +103,7 @@ event DNS::log_dns( r:DNS::Info )
 
 		if( r$qtype == 1 && query in DNS_BLACKLIST )
 		{
-			local alert_subject: string = fmt("DNS query for blacklisted domain: %s", query);
-			local alert_source: string = DNS_BLACKLIST[query]$source;
-	        r$alert_json = fmt( "{ \"alert_subject\": \"%s\", \"alert_source\": \"%s\" }", alert_subject, alert_source );
+			r$intel_source = DNS_BLACKLIST[query]$source;
 			Log::write( BlackbookDns::LOG, r );
 		}
 	}

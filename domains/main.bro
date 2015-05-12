@@ -20,7 +20,7 @@ export
 	redef enum Log::ID += { LOG };
 
 	redef record HTTP::Info += {
-		alert_json: string &log &optional;
+		intel_source: string &log &optional;
 	};
 
 	global log_blackbook_domain: event ( rec:HTTP::Info );
@@ -107,10 +107,7 @@ event HTTP::log_http( r:HTTP::Info )
 
         if( host in DOMAIN_BLACKLIST )
         {
-			local alert_subject: string = fmt("Malicious domain visited: %s", host);
-			local alert_source: string = DOMAIN_BLACKLIST[host]$source;
-			r$alert_json = fmt( "{ \"alert_subject\": \"%s\", \"alert_source\": \"%s\" }", alert_subject, alert_source );
-
+			r$intel_source = DOMAIN_BLACKLIST[host]$source;
 			Log::write( BlackbookDomain::LOG, r );
         }
     }
