@@ -24,7 +24,7 @@ TODO - add instructions for changing filepaths in `bookie.py` and `cleaner.py`.
 
 ### Adding items
 
-Adding items is done by changing those files in the `./blacklists` directory. The file should remain
+Adding items is done by changing those files in the `blacklists/` directory. The file should remain
 in the standard Bro input/log format, and should conform to the following specifications:
 
 1. The first line should be the separator to be used, so likely "#separator \x09"
@@ -41,13 +41,13 @@ in the standard Bro input/log format, and should conform to the following specif
 
 These are a lot of rules, but they are necessary for Bro to read the file properly.
 
-These rules are all enforced by the `cleaner.py` script I wrote in the bookie repository. I recommend
-using this rather than checking manually, as this will bring your attention directly to lines that
+These rules are all enforced by the `cleaner.py` script. I recommend
+using this rather than checking manually, as it will bring your attention directly to lines that
 are misformatted.
 
 ### Updating the Lists
 
-Any of the blacklists can be updated in real time and the changes will be reflected in the Bro
+Any of the blacklists can be updated and the changes will be reflected in real-time for your Bro
 instance. However, I recommend making changes to the file in atomic chunks (i.e., adding full
 lines and entries at a time and never writing an incomplete state to the file).
 
