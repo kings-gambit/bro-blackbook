@@ -172,9 +172,9 @@ def main():
 
 				# for NOTICE log, only consider those lines with
 				# TeamCymru information
-				if 'notice.' in log and 'TeamCymru' not in line:
+				if 'notice.' in log and 'TeamCymruMalwareHashRegistry' not in line:
 					continue
-					
+
 				this_data = dict(zip(header, line.split("\t")))
 				this_data['source_log'] = log
 				data.append(this_data)
