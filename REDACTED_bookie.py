@@ -30,8 +30,8 @@ MAILING_LIST = [
 ]
 
 EMAIL_SUBJECTS = {
-	"intel": "Intel hit for IP: ",
-	"notice": "NOTICE hit for IP: ",
+	#"intel": "Intel hit for IP: ",
+	"notice": "TeamCymru malware match for IP: ",
 	"blackbook": "BLACKBOOK hit for IP: ",
 }
 
@@ -130,8 +130,8 @@ def main():
 
 		all_logs = os.listdir(os.path.join(BRO_LOG_DIRECTORY, mrd))
 
-		# find the most recent time stamp within that directory
-		mrt = max(os.path.basename(l).split('.')[1] for l in all_logs)
+		# find the SECOND-MOST recent time stamp within that directory
+		mrt = sorted(list(set(os.path.basename(l).split('.')[1] for l in all_logs)))[-2]
 		debug("Found most recent log time: " + mrt)
 
 		# pull out those logs that were created the same time as the most recent
